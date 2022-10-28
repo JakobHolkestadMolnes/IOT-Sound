@@ -6,6 +6,7 @@ Possible uses are
 - measure busyness (how busy it is) of environment
 - determine if the environment is too noisy to work comfortably
 - determine if the environment is loud enough to damage hearing
+
 Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
 
 ## Design and methods
