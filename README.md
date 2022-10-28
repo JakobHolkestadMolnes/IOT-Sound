@@ -7,12 +7,12 @@ Possible uses are
 - determine if the environment is too noisy to work comfortably
 - determine if the environment is loud enough to damage hearing
 
-Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
-
 ## Design and methods
 Solution consists of two parts:
 - sensor node
 - visualisation node
+
+Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
 
 ##### Sensor Node
 ESP32 microcontroller with a microphone.  
