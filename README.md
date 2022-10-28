@@ -8,3 +8,19 @@ Possible uses are
 - determine if the environment is loud enough to damage hearing
 
 ## Design and methods
+Solution consists of two parts:
+- sensor node
+- visualisation node
+
+##### Sensor Node
+ESP32 microcontroller with a microphone.  
+TODO: what does it do and how and whatnot
+
+##### Visualisation Node
+Application that recieves data from the sensor node(s), processes it and visualises it to the user.
+
+Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
+
+## Technologies used
+ESP32 microcontroller, microphones  
+[Rust](https://www.rust-lang.org/) programming language: for sensor node and backend of the visualisation node.
