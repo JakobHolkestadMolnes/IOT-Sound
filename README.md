@@ -6,6 +6,7 @@ Possible uses are
 - measure busyness (how busy it is) of environment
 - determine if the environment is too noisy to work comfortably
 - determine if the environment is loud enough to damage hearing
+Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
 
 ## Design and methods
 Solution consists of two parts:
@@ -18,8 +19,6 @@ TODO: what does it do and how and whatnot
 
 ##### Visualisation Node
 Application that recieves data from the sensor node(s), processes it and visualises it to the user.
-
-Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
 
 ## Technologies used
 ESP32 microcontroller, microphones  
