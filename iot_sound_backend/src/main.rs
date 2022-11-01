@@ -1,6 +1,11 @@
+use std::env;
+
 use paho_mqtt as mqtt;
+use dotenv;
 
 fn main() {
+    
+
     println!("Hello, world!");
 
     // add waitgroup
@@ -24,7 +29,14 @@ fn main() {
 
 
 fn listen_for_mqtt_messages() {
-   let cli = mqtt::Client::new("tcp://\"ip adress here\"").unwrap();
+    dotenv::dotenv().ok();
+
+
+    //create a link to the mqtt broker example: "tcp://env_var:1883"
+    let mqtt_broker = format!("tcp://{}:{}", env::var("MQTT_ADRESS").unwrap(), env::var("MQTT_PORT").unwrap());
+    let cli = mqtt::Client::new(mqtt_broker).unwrap_or_else(|err| {
+        panic!("{}", err);
+    });
     let conn_opts = mqtt::ConnectOptionsBuilder::new()
          .keep_alive_interval(std::time::Duration::from_secs(20))
          .clean_session(true)
