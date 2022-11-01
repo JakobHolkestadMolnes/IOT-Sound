@@ -29,11 +29,14 @@ fn main() {
 
 
 fn listen_for_mqtt_messages() {
-    dotenv::dotenv().ok();
 
+    // load env variables from .env file, place .env file in project root
+    dotenv::dotenv().ok();
+    let qmtt_adress = env::var("MQTT_ADRESS").expect("MQTT_ADRESS must be set in .env file");
+    let mqtt_port = env::var("MQTT_PORT").expect("MQTT_PORT must be set");
 
     //create a link to the mqtt broker example: "tcp://env_var:1883"
-    let mqtt_broker = format!("tcp://{}:{}", env::var("MQTT_ADRESS").unwrap(), env::var("MQTT_PORT").unwrap());
+    let mqtt_broker = format!("tcp://{}:{}", qmtt_adress, mqtt_port);
     let cli = mqtt::Client::new(mqtt_broker).unwrap_or_else(|err| {
         panic!("{}", err);
     });
