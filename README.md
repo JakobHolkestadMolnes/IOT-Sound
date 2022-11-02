@@ -16,6 +16,9 @@ Visualisation and sensor node(s) communicate via MQTT broker server set up by ou
 
 ##### Sensor Node
 ESP32 microcontroller with a microphone (RS PRO Omni-Directional Microphone Condenser).
+
+Measures the noise level at fixed time intervals and sends it to the MQTT server.
+
 TODO: what does it do and how and whatnot
 
 ##### Visualisation Node
