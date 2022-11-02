@@ -15,7 +15,7 @@ Solution consists of two parts:
 Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
 
 ##### Sensor Node
-ESP32 microcontroller with a microphone.  
+ESP32 microcontroller with a microphone (RS PRO Omni-Directional Microphone Condenser).
 TODO: what does it do and how and whatnot
 
 ##### Visualisation Node
