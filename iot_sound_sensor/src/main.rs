@@ -12,7 +12,7 @@ async fn main() {
         || env::var("MQTT_CLIENT_ID").is_err()
     {
         println!(
-            "\x1b[33m{}",
+            "\x1b[33m{}\x1b[0m",
             "Environment variables not set. Loading .env file"
         );
         dotenv::dotenv().ok();

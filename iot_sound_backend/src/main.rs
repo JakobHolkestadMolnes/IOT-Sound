@@ -12,9 +12,8 @@ async fn main() {
         || env::var("DB_CONNECTION_STRING").is_err()
     {
         println!(
-            "\x1b[33m{}",
-            "Environment variables not set. Loading .env file
-            \x1b[0m"
+            "\x1b[33m{}\x1b[0m",
+            "Environment variables not set. Loading .env file"
         );
         dotenv::dotenv().ok();
     }
