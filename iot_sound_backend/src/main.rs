@@ -8,7 +8,7 @@ use tokio_postgres;
 async fn main () {
 
     // check if env are set already
-    if env :: var ( "MQTT_HOST" ). is_err ()  || env :: var ( "MQTT_PORT" ). is_err () || env :: var ( "DB_CONNECTION_STRING" ). is_err () {
+    if env :: var ( "MQTT_ADRESS" ). is_err ()  || env :: var ( "MQTT_PORT" ). is_err () || env :: var ( "DB_CONNECTION_STRING" ). is_err () {
         println! ( "\x1b[33m{}" , "Environment variables not set. Loading .env file" );
         dotenv::dotenv().ok();
     }
