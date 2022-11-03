@@ -2,14 +2,19 @@ use dotenv;
 use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
 use std::{env, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
-use tokio::task;
 
 #[tokio::main]
 async fn main() {
     println!("Sensor node started");
 
+    let (client, eventloop) = setup_mqtt_client();
+
     let (tx, rx) = channel::<Message>(100);
-    tokio::join!(message_generator(tx), run_mqtt_client(rx));
+    tokio::join!(
+        keep_mqtt_client_alive(eventloop),
+        send_mqtt_messages(client, rx),
+        message_generator(tx)
+    );
 }
 
 struct Message {
@@ -21,7 +26,7 @@ impl Message {
             payload: payload.bytes().collect(),
         }
     }
-    fn payload_from_str_slice(payload: &str) -> Self {
+    fn _payload_from_str_slice(payload: &str) -> Self {
         Message {
             payload: payload.bytes().collect(),
         }
@@ -29,13 +34,15 @@ impl Message {
 }
 
 /// Generates messages and sends them to the mqtt client
-/// 
+///
 /// * `channel` - The channel to send the messages to
 async fn message_generator(channel: Sender<Message>) {
     let mut i = 0;
     loop {
         match channel
-            .send(Message::payload_from_string(format!("This is sensor data {i}")))
+            .send(Message::payload_from_string(format!(
+                "This is sensor data {i}"
+            )))
             .await
         {
             Ok(_) => {
@@ -50,10 +57,23 @@ async fn message_generator(channel: Sender<Message>) {
     }
 }
 
-/// Starts tge mqtt client and listens for messages
-/// 
+/// Listens for messages on the channel and publishes them to the mqtt client
+///
 /// * `channel` - The channel to listen for messages on
-async fn run_mqtt_client(mut channel: Receiver<Message>) {
+async fn send_mqtt_messages(client: AsyncClient, mut channel: Receiver<Message>) {
+    // listen for messages from the message generator, send them to the mqtt client
+    while let Some(message) = channel.recv().await {
+        client
+            .publish("g6/sensor", QoS::ExactlyOnce, false, message.payload)
+            .await
+            .unwrap();
+    }
+}
+
+/// Sets up the mqtt client
+///
+///
+fn setup_mqtt_client() -> (AsyncClient, EventLoop) {
     // Load environment variables
     dotenv::dotenv().ok();
     let qmtt_adress = env::var("MQTT_ADRESS").expect("MQTT_ADRESS must be set in .env file");
@@ -66,21 +86,11 @@ async fn run_mqtt_client(mut channel: Receiver<Message>) {
     let mut mqttoptions = MqttOptions::new("g6Sensor", qmtt_adress, mqtt_port);
     mqttoptions.set_keep_alive(Duration::from_secs(5));
     let (client, eventloop) = AsyncClient::new(mqttoptions, 10);
-
-    // keep mqtt client running in a separate task (non-blocking)
-    task::spawn(keep_mqtt_client_alive(eventloop));
-
-    // listen for messages from the message generator, send them to the mqtt client
-    while let Some(message) = channel.recv().await {
-        client
-            .publish("g6/sensor", QoS::ExactlyOnce, false, message.payload)
-            .await
-            .unwrap();
-    }
+    (client, eventloop)
 }
 
 /// Keeps the mqtt client running
-/// 
+///
 /// * `eventloop` - The eventloop of the mqtt client
 async fn keep_mqtt_client_alive(mut eventloop: EventLoop) {
     loop {
