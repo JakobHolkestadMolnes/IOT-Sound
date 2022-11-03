@@ -4,7 +4,7 @@ use std::{env, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), std::io::Error> {
     println!("Sensor node started");
 
     if env::var("MQTT_HOST").is_err()
@@ -26,8 +26,9 @@ async fn main() {
         send_mqtt_messages(client, rx),
         message_generator(tx)
     );
+    
+    Ok(())
 }
-
 struct Message {
     payload: Vec<u8>,
 }
