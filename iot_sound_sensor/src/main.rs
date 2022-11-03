@@ -29,6 +29,7 @@ async fn main() -> Result<(), std::io::Error> {
 
     if let Err(e) = err {
         println!("Error: {}", e);
+        return Err(e);
     }
 
     
