@@ -7,6 +7,17 @@ use tokio::sync::mpsc::{channel, Receiver, Sender};
 async fn main() {
     println!("Sensor node started");
 
+    if env::var("MQTT_HOST").is_err()
+        || env::var("MQTT_PORT").is_err()
+        || env::var("MQTT_CLIENT_ID").is_err()
+    {
+        println!(
+            "\x1b[33m{}",
+            "Environment variables not set. Loading .env file"
+        );
+        dotenv::dotenv().ok();
+    }
+
     let (client, eventloop) = setup_mqtt_client();
 
     let (tx, rx) = channel::<Message>(100);
@@ -61,10 +72,15 @@ async fn message_generator(channel: Sender<Message>) {
 ///
 /// * `channel` - The channel to listen for messages on
 async fn send_mqtt_messages(client: AsyncClient, mut channel: Receiver<Message>) {
-    // listen for messages from the message generator, send them to the mqtt client
+    let mqtt_client_id = env::var("MQTT_CLIENT_ID").expect("MQTT_CLIENT_ID must be set");
+    let topic = format!(
+        "ntnu/ankeret/biblioteket/loudness/group06/{}",
+        mqtt_client_id
+    );
+
     while let Some(message) = channel.recv().await {
         client
-            .publish("g6/sensor", QoS::ExactlyOnce, false, message.payload)
+            .publish(&topic, QoS::ExactlyOnce, false, message.payload)
             .await
             .unwrap();
     }
@@ -75,15 +91,15 @@ async fn send_mqtt_messages(client: AsyncClient, mut channel: Receiver<Message>)
 ///
 fn setup_mqtt_client() -> (AsyncClient, EventLoop) {
     // Load environment variables
-    dotenv::dotenv().ok();
     let qmtt_adress = env::var("MQTT_ADRESS").expect("MQTT_ADRESS must be set in .env file");
     let mqtt_port = env::var("MQTT_PORT").expect("MQTT_PORT must be set");
     let mqtt_port = mqtt_port
         .parse::<u16>()
         .expect("MQTT_PORT must be a number");
+    let mqtt_client_id = env::var("MQTT_CLIENT_ID").expect("MQTT_CLIENT_ID must be set");
 
     // Setup mqtt client
-    let mut mqttoptions = MqttOptions::new("g6Sensor", qmtt_adress, mqtt_port);
+    let mut mqttoptions = MqttOptions::new(mqtt_client_id, qmtt_adress, mqtt_port);
     mqttoptions.set_keep_alive(Duration::from_secs(5));
     let (client, eventloop) = AsyncClient::new(mqttoptions, 10);
     (client, eventloop)
