@@ -13,7 +13,8 @@ async fn main() {
     {
         println!(
             "\x1b[33m{}",
-            "Environment variables not set. Loading .env file"
+            "Environment variables not set. Loading .env file
+            \x1b[0m"
         );
         dotenv::dotenv().ok();
     }
