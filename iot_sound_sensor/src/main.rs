@@ -21,11 +21,16 @@ async fn main() -> Result<(), std::io::Error> {
     let (client, eventloop) = setup_mqtt_client();
 
     let (tx, rx) = channel::<Message>(100);
-    tokio::join!(
+    let err = tokio::try_join!(
         keep_mqtt_client_alive(eventloop),
         send_mqtt_messages(client, rx),
         message_generator(tx)
     );
+
+    if let Err(e) = err {
+        println!("Error: {}", e);
+    }
+
     
     Ok(())
 }
@@ -48,7 +53,7 @@ impl Message {
 /// Generates messages and sends them to the mqtt client
 ///
 /// * `channel` - The channel to send the messages to
-async fn message_generator(channel: Sender<Message>) {
+async fn message_generator(channel: Sender<Message>) -> Result<(), std::io::Error> {
     let mut i = 0;
     loop {
         match channel
@@ -63,6 +68,10 @@ async fn message_generator(channel: Sender<Message>) {
             }
             Err(e) => {
                 println!("Failed to send message: {}", e);
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Failed to send message",
+                ));
             }
         };
         i += 1;
@@ -72,7 +81,7 @@ async fn message_generator(channel: Sender<Message>) {
 /// Listens for messages on the channel and publishes them to the mqtt client
 ///
 /// * `channel` - The channel to listen for messages on
-async fn send_mqtt_messages(client: AsyncClient, mut channel: Receiver<Message>) {
+async fn send_mqtt_messages(client: AsyncClient, mut channel: Receiver<Message>) -> Result<(), std::io::Error>{
     let mqtt_client_id = env::var("MQTT_CLIENT_ID").expect("MQTT_CLIENT_ID must be set");
     let topic = format!(
         "ntnu/ankeret/biblioteket/loudness/group06/{}",
@@ -83,8 +92,9 @@ async fn send_mqtt_messages(client: AsyncClient, mut channel: Receiver<Message>)
         client
             .publish(&topic, QoS::ExactlyOnce, false, message.payload)
             .await
-            .unwrap();
+            .expect("Failed to publish message");
     }
+    Ok(())
 }
 
 /// Sets up the mqtt client
@@ -109,7 +119,7 @@ fn setup_mqtt_client() -> (AsyncClient, EventLoop) {
 /// Keeps the mqtt client running
 ///
 /// * `eventloop` - The eventloop of the mqtt client
-async fn keep_mqtt_client_alive(mut eventloop: EventLoop) {
+async fn keep_mqtt_client_alive(mut eventloop: EventLoop) -> Result<(), std::io::Error> {
     loop {
         match eventloop.poll().await {
             Ok(notification) => {
@@ -117,6 +127,10 @@ async fn keep_mqtt_client_alive(mut eventloop: EventLoop) {
             }
             Err(e) => {
                 println!("Failed to poll: {}", e);
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Failed to poll",
+                ));
             }
         }
     }
