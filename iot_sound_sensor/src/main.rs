@@ -51,16 +51,31 @@ impl Message {
     }
 }
 
+
+struct JsonDblevel {
+    db_level: f64,
+}
+
+impl JsonDblevel {
+    fn new(db_level: f64) -> Self {
+        JsonDblevel { db_level }
+    }
+
+    fn to_string(&self) -> String {
+        format!("{{\"dbLevel\":{}}}", self.db_level)
+    }
+}
+    
+
 /// Generates messages and sends them to the mqtt client
 ///
 /// * `channel` - The channel to send the messages to
 async fn message_generator(channel: Sender<Message>) -> Result<(), std::io::Error> {
     let mut i = 0;
     loop {
+        let message = JsonDblevel::new(i as f64).to_string();
         match channel
-            .send(Message::payload_from_string(format!(
-                "This is sensor data {i}"
-            )))
+            .send(Message::payload_from_string(message))
             .await
         {
             Ok(_) => {
