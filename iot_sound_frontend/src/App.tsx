@@ -6,9 +6,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Content from './components/content'
 import Home from './components/home'
 
-import {Helmet} from "react-helmet";
-
-import image from './assets/Dirik.png'
 
 function App() {
 
