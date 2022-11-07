@@ -1,5 +1,5 @@
 [package]
-name = "iot_sound_web"
+name = "iot_sound_api"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 actix-web = "4.2.1"
 tokio-postgres = "0.7.7"
+dotenv = "0.15.0"
+tokio = { version = "1.21.2", features = ["full"] }
+deadpool-postgres = "0.10.3"
