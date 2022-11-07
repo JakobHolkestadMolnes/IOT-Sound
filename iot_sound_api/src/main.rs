@@ -1,4 +1,5 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+use actix_cors::Cors;
 use tokio_postgres::{self, types::Timestamp};
 use dotenv;
 use std::env;
@@ -97,11 +98,14 @@ async fn main() -> std::io::Result<()> {
 
    
 
+
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .route("/", web::get().to(index))
             .route("/sound", web::get().to(get_sound))
+            .wrap(Cors::permissive())
+
 
  } )
         .bind("localhost:8080")?
