@@ -35,9 +35,28 @@ async fn main() {
         }
     });
 
-    //if not tables create one
-    let create_table = client.prepare("CREATE TABLE IF NOT EXISTS sound (id SERIAL PRIMARY KEY, sound VARCHAR(255), time TIMESTAMP)").await.unwrap();
-    client.execute(&create_table, &[]).await.unwrap();
+    //if no tables, create them
+    let create_table_sensor = client.prepare(
+        "CREATE TABLE IF NOT EXISTS sensor(
+            id SERIAL PRIMARY KEY,
+            name text NOT NULL,
+            type text NOT NULL CHECK (type IN ('loudness', 'temperature', 'humidity', 'light', 'air_quality', 'oxygen', 'co2')),
+            location text NOT NULL);"
+        ).await.unwrap();
+
+    let create_table_loudness = client
+        .prepare(
+            "CREATE TABLE IF NOT EXISTS loudness (
+            id SERIAL PRIMARY KEY,
+            sensor_id int REFERENCES sensor(id),
+            level text NOT NULL,
+            time timestamp NOT NULL);",
+        )
+        .await
+        .unwrap();
+
+    client.execute(&create_table_sensor, &[]).await.unwrap();
+    client.execute(&create_table_loudness, &[]).await.unwrap();
 
     listen_for_message(mqtt_adress, mqtt_port, client).await;
 }
@@ -74,17 +93,21 @@ async fn listen_for_message(
                     // convert payload to string
                     let payload = std::str::from_utf8(&publish.payload).unwrap();
 
-                    let insert_sound = database_connection
-                        .prepare("INSERT INTO sound (sound, time) VALUES ($1, $2)")
+                    let sensor_id = String::from("1"); //TODO get sensor id from payload
+
+                    let insert_loudness = database_connection
+                        .prepare(
+                            "INSERT INTO loudness (sensor_id, level, time) VALUES ($1, $2, $3)",
+                        )
                         .await
                         .expect("Failed to prepare insert statement");
 
                     // get current time as timestamp
-                    let now = std::time::SystemTime::now();
+                    let now = std::time::SystemTime::now(); //TODO time should come from sensor
                     database_connection
-                        .execute(&insert_sound, &[&payload, &now])
+                        .execute(&insert_loudness, &[&sensor_id, &payload, &now])
                         .await
-                        .expect("Failed to insert sound into database");
+                        .expect("Failed to insert loudness into database");
                 }
                 _ => {}
             },
