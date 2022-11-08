@@ -38,7 +38,7 @@ async fn main() {
     //if no tables, create them
     let create_table_sensor = client.prepare(
         "CREATE TABLE IF NOT EXISTS sensor(
-            id SERIAL PRIMARY KEY,
+            id text PRIMARY KEY,
             name text NOT NULL,
             type text NOT NULL CHECK (type IN ('loudness', 'temperature', 'humidity', 'light', 'air_quality', 'oxygen', 'co2')),
             location text NOT NULL);"
@@ -48,7 +48,7 @@ async fn main() {
         .prepare(
             "CREATE TABLE IF NOT EXISTS loudness (
             id SERIAL PRIMARY KEY,
-            sensor_id int REFERENCES sensor(id),
+            sensor_id text REFERENCES sensor(id),
             level text NOT NULL,
             time timestamp NOT NULL);",
         )
@@ -72,7 +72,10 @@ async fn listen_for_message(
     let mqtt_options = MqttOptions::new("sensor_node", mqtt_adress, mqtt_port.parse().unwrap());
     let (mqtt_client, mut eventloop) = AsyncClient::new(mqtt_options, 10);
     mqtt_client
-        .subscribe("g6/sensor", QoS::AtLeastOnce)
+        .subscribe(
+            "ntnu/ankeret/biblioteket/loudness/group06/#",
+            QoS::AtLeastOnce,
+        )
         .await
         .expect("Failed to subscribe to topic");
 
@@ -93,7 +96,11 @@ async fn listen_for_message(
                     // convert payload to string
                     let payload = std::str::from_utf8(&publish.payload).unwrap();
 
-                    let sensor_id = String::from("1"); //TODO get sensor id from payload
+                    let topic_split: Vec<&str> = publish.topic.split('/').collect();
+                    let sensor_id = topic_split.last().unwrap();
+                    println!("Sender: {}", sensor_id);
+
+                    
 
                     let insert_loudness = database_connection
                         .prepare(
