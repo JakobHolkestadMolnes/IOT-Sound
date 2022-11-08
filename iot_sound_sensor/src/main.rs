@@ -2,6 +2,7 @@ use dotenv;
 use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
 use std::{env, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
+use json;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -62,7 +63,7 @@ impl JsonDblevel {
     }
 
     fn to_string(&self) -> String {
-        format!("{{\"dbLevel\":{}}}", self.db_level)
+        json::from(self.db_level).to_string()
     }
 }
     
