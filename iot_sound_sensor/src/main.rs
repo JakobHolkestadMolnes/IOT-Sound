@@ -8,7 +8,7 @@ use json;
 async fn main() -> Result<(), std::io::Error> {
     println!("Sensor node started");
 
-    if env::var("MQTT_HOST").is_err()
+    if env::var("MQTT_ADDRESS").is_err()
         || env::var("MQTT_PORT").is_err()
         || env::var("MQTT_CLIENT_ID").is_err()
     {
@@ -119,7 +119,7 @@ async fn send_mqtt_messages(client: AsyncClient, mut channel: Receiver<Message>)
 ///
 fn setup_mqtt_client() -> (AsyncClient, EventLoop) {
     // Load environment variables
-    let qmtt_adress = env::var("MQTT_ADRESS").expect("MQTT_ADRESS must be set in .env file");
+    let qmtt_adress = env::var("MQTT_ADDRESS").expect("MQTT_ADDRESS must be set in .env file");
     let mqtt_port = env::var("MQTT_PORT").expect("MQTT_PORT must be set");
     let mqtt_port = mqtt_port
         .parse::<u16>()
