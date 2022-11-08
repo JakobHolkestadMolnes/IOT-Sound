@@ -1,13 +1,42 @@
-use std::env;
+use std::env::{self, VarError};
 
 use dotenv;
 use rumqttc::{AsyncClient, MqttOptions, QoS};
-use tokio_postgres;
+//use tokio_postgres;
+use tokio_postgres::Client;
 
 #[tokio::main]
 async fn main() {
+    let (mqtt_address, mqtt_port, db_connection_string) = match get_env_variables() {
+        Ok((address, port, db_string)) => (address, port, db_string),
+        Err(e) => panic!("Env variables error: {}", e),
+    };
+
+    let (db_client, connection) =
+        match tokio_postgres::connect(&db_connection_string, tokio_postgres::NoTls).await {
+            Ok((client, connection)) => (client, connection),
+            Err(e) => panic!("Postgres connection error: {}", e),
+        };
+
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("Postgres connection error: {}", e);
+        }
+    });
+
+    match setup_database(&db_client).await {
+        Ok(_) => println!("Database setup successful"),
+        Err(e) => panic!("Database setup error: {}", e),
+    }
+
+    listen_for_message(mqtt_address, mqtt_port, db_client).await;
+}
+
+/// Get the environment variables
+/// MQTT_ADDRESS, MQTT_PORT, DB_CONNECTION_STRING
+fn get_env_variables() -> Result<(String, String, String), VarError> {
     // check if env are set already
-    if env::var("MQTT_ADRESS").is_err()
+    if env::var("MQTT_ADDRESS").is_err()
         || env::var("MQTT_PORT").is_err()
         || env::var("DB_CONNECTION_STRING").is_err()
     {
@@ -17,48 +46,39 @@ async fn main() {
         );
         dotenv::dotenv().ok();
     }
+    // if any of the env are not set, return early with error
+    let mqtt_adress = env::var("MQTT_ADDRESS")?;
+    let mqtt_port = env::var("MQTT_PORT")?;
+    let db_connection_string = env::var("DB_CONNECTION_STRING")?;
+    Ok((mqtt_adress, mqtt_port, db_connection_string))
+}
 
-    let mqtt_adress = env::var("MQTT_ADRESS").expect("MQTT_ADRESS must be set in .env file");
-    let mqtt_port = env::var("MQTT_PORT").expect("MQTT_PORT must be set");
+/// Setup the database
+/// Creates tables if they don't exist
+async fn setup_database(db_client: &Client) -> Result<(), tokio_postgres::Error> {
+    // sensor table
+    let allowed_sensors =
+        "'loudness', 'temperature', 'humidity', 'light', 'air_quality', 'oxygen', 'co2'";
+    let create_sensor_table_sql = format!(
+        "CREATE TABLE IF NOT EXISTS sensor (
+        id text PRIMARY KEY,
+        name text NOT NULL,
+        type text NOT NULL CHECK (type IN ({allowed_sensors})),
+        location text NOT NULL);"
+    );
+    let create_table_sensor = db_client.prepare(&create_sensor_table_sql).await?;
+    db_client.execute(&create_table_sensor, &[]).await?;
 
-    let db_connection_string =
-        env::var("DB_CONNECTION_STRING").expect("DB_CONNECTION_STRING must be set");
+    // loudness table
+    let create_loudness_table_sql = "CREATE TABLE IF NOT EXISTS loudness (
+    id SERIAL PRIMARY KEY,
+    sensor_id text REFERENCES sensor(id),
+    level text NOT NULL,
+    time timestamp NOT NULL);";
+    let create_table_loudness = db_client.prepare(&create_loudness_table_sql).await?;
+    db_client.execute(&create_table_loudness, &[]).await?;
 
-    let (client, connection) =
-        tokio_postgres::connect(&db_connection_string, tokio_postgres::NoTls)
-            .await
-            .unwrap();
-
-    tokio::spawn(async move {
-        if let Err(e) = connection.await {
-            eprintln!("connection error: {}", e);
-        }
-    });
-
-    //if no tables, create them
-    let create_table_sensor = client.prepare(
-        "CREATE TABLE IF NOT EXISTS sensor(
-            id text PRIMARY KEY,
-            name text NOT NULL,
-            type text NOT NULL CHECK (type IN ('loudness', 'temperature', 'humidity', 'light', 'air_quality', 'oxygen', 'co2')),
-            location text NOT NULL);"
-        ).await.unwrap();
-
-    let create_table_loudness = client
-        .prepare(
-            "CREATE TABLE IF NOT EXISTS loudness (
-            id SERIAL PRIMARY KEY,
-            sensor_id text REFERENCES sensor(id),
-            level text NOT NULL,
-            time timestamp NOT NULL);",
-        )
-        .await
-        .unwrap();
-
-    client.execute(&create_table_sensor, &[]).await.unwrap();
-    client.execute(&create_table_loudness, &[]).await.unwrap();
-
-    listen_for_message(mqtt_adress, mqtt_port, client).await;
+    Ok(())
 }
 
 /// Async function to listen for messages on the MQTT broker
@@ -72,10 +92,7 @@ async fn listen_for_message(
     let mqtt_options = MqttOptions::new("sensor_node", mqtt_adress, mqtt_port.parse().unwrap());
     let (mqtt_client, mut eventloop) = AsyncClient::new(mqtt_options, 10);
     mqtt_client
-        .subscribe(
-            "ntnu/ankeret/biblioteket/loudness/group06/#",
-            QoS::AtLeastOnce,
-        )
+        .subscribe("ntnu/+/+/loudness/group06/#", QoS::AtLeastOnce)
         .await
         .expect("Failed to subscribe to topic");
 
@@ -99,8 +116,6 @@ async fn listen_for_message(
                     let topic_split: Vec<&str> = publish.topic.split('/').collect();
                     let sensor_id = topic_split.last().unwrap();
                     println!("Sender: {}", sensor_id);
-
-                    
 
                     let insert_loudness = database_connection
                         .prepare(
