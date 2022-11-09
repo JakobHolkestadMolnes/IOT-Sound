@@ -1,14 +1,25 @@
-use std::env::{self, VarError};
-
+use bytes::Bytes;
 use dotenv;
-use rumqttc::{AsyncClient, MqttOptions, QoS};
-//use tokio_postgres;
+use rumqttc::{AsyncClient, ClientError, MqttOptions, QoS};
+use std::env::{self, VarError};
+use std::time::Duration;
+use tokio::sync::mpsc::{channel, Receiver, Sender};
 use tokio_postgres::Client;
+
+const MQTT_ID_BACKEND: &str = "g6backend";
+const MQTT_TOPIC: &str = "ntnu/+/+/loudness/group06/+";
 
 #[tokio::main]
 async fn main() {
     let (mqtt_address, mqtt_port, db_connection_string) = match get_env_variables() {
-        Ok((address, port, db_string)) => (address, port, db_string),
+        Ok((address, port, db_string)) => (
+            address,
+            match port.parse() {
+                Ok(port) => port,
+                Err(e) => panic!("Error parsing port: {}", e),
+            },
+            db_string,
+        ),
         Err(e) => panic!("Env variables error: {}", e),
     };
 
@@ -29,7 +40,17 @@ async fn main() {
         Err(e) => panic!("Database setup error: {}", e),
     }
 
-    listen_for_message(mqtt_address, mqtt_port, db_client).await;
+    let (_mqtt_client, eventloop) = match setup_mqtt_client(mqtt_address, mqtt_port).await {
+        Ok((client, eventloop)) => (client, eventloop),
+        Err(e) => panic!("MQTT setup error: {}", e),
+    };
+
+    let (tx, rx) = channel::<(String, Bytes)>(100);
+
+    tokio::join!(
+        listen_for_messages(eventloop, tx),
+        insert_into_database(db_client, rx)
+    );
 }
 
 /// Get the environment variables
@@ -81,70 +102,55 @@ async fn setup_database(db_client: &Client) -> Result<(), tokio_postgres::Error>
     Ok(())
 }
 
-/// Async function to listen for messages on the MQTT broker
-/// * `mqtt_adress`: String
-/// * `mqtt_port`: String
-async fn listen_for_message(
+async fn setup_mqtt_client(
     mqtt_adress: String,
-    mqtt_port: String,
-    database_connection: tokio_postgres::Client,
+    mqtt_port: u16,
+) -> Result<(AsyncClient, rumqttc::EventLoop), ClientError> {
+    let mut mqtt_options = MqttOptions::new(MQTT_ID_BACKEND, mqtt_adress, mqtt_port);
+    mqtt_options.set_keep_alive(Duration::from_secs(5));
+    let (mqtt_client, eventloop) = AsyncClient::new(mqtt_options, 10);
+
+    mqtt_client.subscribe(MQTT_TOPIC, QoS::AtLeastOnce).await?;
+    Ok((mqtt_client, eventloop))
+}
+
+async fn listen_for_messages(
+    mut eventloop: rumqttc::EventLoop,
+    channel: Sender<(String, Bytes)>,
 ) {
-    let mqtt_options = MqttOptions::new("sensor_node", mqtt_adress, mqtt_port.parse().unwrap());
-
-    let mqtt_client_id = env::var("MQTT_CLIENT_ID").expect("MQTT_CLIENT_ID must be set");
-    let topic = format!(
-        "ntnu/ankeret/biblioteket/loudness/group06/{}",
-        mqtt_client_id
-    );
-
-
-    let (mqtt_client, mut eventloop) = AsyncClient::new(mqtt_options, 10);
-    mqtt_client
-        .subscribe("ntnu/+/+/loudness/group06/#", QoS::AtLeastOnce)
-        .await
-        .expect("Failed to subscribe to topic");
-
-    let mut message_count = 0;
     loop {
-        let notification = eventloop.poll().await;
-        match notification {
-            Ok(rumqttc::Event::Incoming(incoming)) => match incoming {
-                rumqttc::Incoming::Publish(publish) => {
-                    println!(
-                        "Received message: {:?}",
-                        std::str::from_utf8(&publish.payload)
-                            .unwrap_or("Failed to convert message to string")
-                    );
-                    println!("Message count: {}", message_count);
-                    message_count += 1;
-
-                    // convert payload to string
-                    let payload = std::str::from_utf8(&publish.payload).unwrap();
-
-                    let topic_split: Vec<&str> = publish.topic.split('/').collect();
-                    let sensor_id = topic_split.last().unwrap();
-                    println!("Sender: {}", sensor_id);
-
-                    let insert_loudness = database_connection
-                        .prepare(
-                            "INSERT INTO loudness (sensor_id, level, time) VALUES ($1, $2, $3)",
-                        )
+        match eventloop.poll().await {
+            Ok(rumqttc::Event::Incoming(incoming)) => {
+                if let rumqttc::Incoming::Publish(publish) = incoming {
+                    channel
+                        .send((publish.topic, publish.payload))
                         .await
-                        .expect("Failed to prepare insert statement");
-
-                    // get current time as timestamp
-                    let now = std::time::SystemTime::now(); //TODO time should come from sensor
-                    database_connection
-                        .execute(&insert_loudness, &[&sensor_id, &payload, &now])
-                        .await
-                        .expect("Failed to insert loudness into database");
+                        .unwrap();
                 }
-                _ => {}
-            },
+            }
             Ok(_) => {}
             Err(e) => {
                 println!("Error: {:?}", e);
             }
         }
+    }
+}
+
+async fn insert_into_database(db_client: Client, mut channel: Receiver<(String, Bytes)>) {
+    while let Some(data) = channel.recv().await {
+        let topic_split: Vec<&str> = data.0.split('/').collect();
+        let sensor_id = topic_split.last().unwrap();
+        let payload = std::str::from_utf8(&data.1).unwrap();
+        println!("Sensorid: {} Message: {}",sensor_id, payload);
+
+        let insert_loudness = db_client
+            .prepare("INSERT INTO loudness (sensor_id, level, time) VALUES ($1, $2, $3)")
+            .await
+            .expect("Failed to prepare insert statement");
+        let now = std::time::SystemTime::now(); //TODO time should come from sensor
+        db_client
+            .execute(&insert_loudness, &[&sensor_id, &payload, &now])
+            .await
+            .expect("Failed to insert loudness into database");
     }
 }

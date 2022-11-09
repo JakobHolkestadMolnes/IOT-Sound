@@ -732,6 +732,7 @@ dependencies = [
 name = "iot_sound_backend"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "dotenv",
  "rumqttc",
  "tokio",

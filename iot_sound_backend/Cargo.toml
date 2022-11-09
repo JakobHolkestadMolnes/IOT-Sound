@@ -10,5 +10,4 @@ rumqttc = "0.17.0"
 dotenv = "0.15.0"
 tokio = { version = "1.21.2", features = ["full"] }
 tokio-postgres = "0.7.7"
-
-
+bytes = "1"
