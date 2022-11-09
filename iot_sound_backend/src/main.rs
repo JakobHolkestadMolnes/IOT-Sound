@@ -70,9 +70,17 @@ async fn listen_for_message(
     database_connection: tokio_postgres::Client,
 ) {
     let mqtt_options = MqttOptions::new("sensor_node", mqtt_adress, mqtt_port.parse().unwrap());
+
+    let mqtt_client_id = env::var("MQTT_CLIENT_ID").expect("MQTT_CLIENT_ID must be set");
+    let topic = format!(
+        "ntnu/ankeret/biblioteket/loudness/group06/{}",
+        mqtt_client_id
+    );
+
+
     let (mqtt_client, mut eventloop) = AsyncClient::new(mqtt_options, 10);
     mqtt_client
-        .subscribe("g6/sensor", QoS::AtLeastOnce)
+        .subscribe(topic, QoS::AtLeastOnce)
         .await
         .expect("Failed to subscribe to topic");
 
