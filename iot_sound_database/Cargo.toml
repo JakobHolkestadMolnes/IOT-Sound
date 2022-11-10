@@ -1,18 +1,15 @@
 [package]
-name = "iot_sound_api"
+name = "iot_sound_database"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "4.2.1"
-tokio-postgres = "0.7.7"
+rumqttc = "0.17.0"
 dotenv = "0.15.0"
 tokio = { version = "1.21.2", features = ["full"] }
+tokio-postgres = "0.7.7"
 deadpool-postgres = "0.10.3"
 serde_json = "1.0.87"
-serde = "1.0.147"
-actix-cors = "0.6.4"
-
-iot_sound_database = { path = "../iot_sound_database" }
+serde = { version = "1.0.147", features = ["derive"] }

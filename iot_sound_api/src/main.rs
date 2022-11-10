@@ -7,6 +7,7 @@ use tokio;
 use deadpool_postgres;
 use serde_json::json;
 use serde::{Deserialize, Serialize};
+use iot_sound_database;
 
 
 
@@ -45,25 +46,17 @@ async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
-async fn get_sound(pool: web::Data<deadpool_postgres::Pool>) -> impl Responder {
-    let client = pool.get().await.unwrap();
-    let statement = client.prepare("SELECT * FROM sound").await.unwrap();
-    let rows = client.query(&statement, &[]).await.unwrap();
-    let mut data = Vec::new();
-    for row in rows {
-        data.push(Data {
-            id: row.get(0),
-            sound: row.get(1),
-            time: row.get(2),
-        });
+
+
+
+async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder {
+    let data = pool.get_loudness().await.unwrap();
+   if data.len() > 0 {
+       HttpResponse::Ok().json(data)
+    } else {
+        HttpResponse::NotFound().body("No data found")
     }
-
-   let data = data.into_iter().map(|data| data.into()).collect::<Vec<serde_json::Value>>();
-
-    HttpResponse::Ok().json(data)
-
-
-    
+ 
 
 }
 
@@ -83,23 +76,22 @@ async fn main() -> std::io::Result<()> {
         "Environment variables not set. Loading .env file"
     );
     dotenv::dotenv().ok();
+
+    
 }
 
-    let config = deadpool_postgres::Config {
-        user: Some(env::var("DB_USER").unwrap()),
-        password: Some(env::var("DB_PASSWORD").unwrap()),
-        host: Some(env::var("DB_HOST").unwrap()),
-        port: Some(env::var("DB_PORT").unwrap().parse().unwrap()),
-        dbname: Some(env::var("DB_NAME").unwrap()),
-        ..Default::default()
-    };
-
-    let pool = config .create_pool(None, tokio_postgres::NoTls).unwrap();
-
+let pool = iot_sound_database::Pool::new(
+    Some(env::var("DB_HOST").unwrap()),
+    Some(env::var("DB_PORT").unwrap().parse().unwrap()),
+    Some(env::var("DB_USER").unwrap()),
+    Some(env::var("DB_PASSWORD").unwrap()),
+    Some(env::var("DB_NAME").unwrap()),
+).await;
+ 
    
 
 
-    HttpServer::new(move || {
+    HttpServer::new( move ||{
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .route("/", web::get().to(index))
@@ -108,7 +100,7 @@ async fn main() -> std::io::Result<()> {
 
 
  } )
-        .bind("localhost:8080")?
+        .bind("localhost:8081")?
         .run().await
         
 }
