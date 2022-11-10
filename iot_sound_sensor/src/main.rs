@@ -1,14 +1,13 @@
-use dotenv;
 use json;
 use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
-use std::{env, time::Duration};
+use std::{env, error::Error, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
 // mqtt topic for this sensor to publish to
 const MQTT_TOPIC: &str = "ntnu/ankeret/biblioteket/loudness/group06/";
 
 #[tokio::main]
-async fn main() -> Result<(), std::io::Error> {
+async fn main() -> Result<(), Box<dyn Error>> {
     println!("Sensor node started");
 
     // get env variables
@@ -30,7 +29,7 @@ async fn main() -> Result<(), std::io::Error> {
     let err = tokio::try_join!(
         keep_mqtt_client_alive(eventloop),
         send_mqtt_messages(client, &mqtt_client_id, rx),
-        message_generator(tx)
+        message_generator(tx),
     );
 
     if let Err(e) = err {
@@ -56,6 +55,7 @@ fn get_env_variables() -> Result<(String, String, String), env::VarError> {
     let mqtt_client_id = env::var("MQTT_CLIENT_ID")?;
     Ok((mqtt_adress, mqtt_port, mqtt_client_id))
 }
+#[derive(Debug)]
 struct Message {
     payload: Vec<u8>,
 }
@@ -89,21 +89,18 @@ impl JsonDblevel {
 /// Generates messages and sends them to the mqtt client
 ///
 /// * `channel` - The channel to send the messages to
-async fn message_generator(channel: Sender<Message>) -> Result<(), std::io::Error> {
+async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error>> {
     let mut i = 0;
     loop {
         let message = JsonDblevel::new(i as f64).to_string();
         match channel.send(Message::payload_from_string(message)).await {
             Ok(_) => {
-                println!("message sent to client: {i}");
+                //println!("message sent to client: {i}");
                 tokio::time::sleep(Duration::from_secs(2)).await;
             }
             Err(e) => {
-                println!("Failed to send message: {}", e);
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "Failed to send message",
-                ));
+                println!("Failed to send message to publisher: {}", e);
+                return Err(Box::new(e));
             }
         };
         i += 1;
@@ -119,14 +116,16 @@ async fn send_mqtt_messages(
     client: AsyncClient,
     client_id: &str,
     mut channel: Receiver<Message>,
-) -> Result<(), std::io::Error> {
+) -> Result<(), Box<dyn Error>> {
     let topic = format!("{MQTT_TOPIC}{client_id}");
-
     while let Some(message) = channel.recv().await {
-        client
+        if let Err(e) = client
             .publish(&topic, QoS::ExactlyOnce, false, message.payload)
             .await
-            .expect("Failed to publish message");
+        {
+            println!("Failed to publish: {}", e);
+            return Err(Box::new(e));
+        }
     }
     Ok(())
 }
@@ -148,7 +147,7 @@ fn setup_mqtt_client(
 /// Keeps the mqtt client running
 ///
 /// * `eventloop` - The eventloop of the mqtt client
-async fn keep_mqtt_client_alive(mut eventloop: EventLoop) -> Result<(), std::io::Error> {
+async fn keep_mqtt_client_alive(mut eventloop: EventLoop) -> Result<(), Box<dyn Error>> {
     loop {
         match eventloop.poll().await {
             Ok(notification) => {
@@ -156,10 +155,7 @@ async fn keep_mqtt_client_alive(mut eventloop: EventLoop) -> Result<(), std::io:
             }
             Err(e) => {
                 println!("Failed to poll: {}", e);
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "Failed to poll",
-                ));
+                tokio::time::sleep(Duration::from_secs(2)).await;
             }
         }
     }
