@@ -2,11 +2,13 @@ use deadpool_postgres;
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
 
+/// Struct that contains a pool of postgres connections
 #[derive(Clone)]
 pub struct Pool {
     pool: deadpool_postgres::Pool,
 }
 
+/// Struct for data from the database that can be converted to json
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Data {
     id: i32,
@@ -17,6 +19,14 @@ pub struct Data {
 
 // implement a trait for vec of data
 impl Data {
+    /// Create a new Data struct
+    /// # Arguments
+    /// * `id` - The id of the data
+    /// * `sensor_name` - The name of the sensor
+    /// * `sound` - The sound level
+    /// * `time` - The time the data was created
+    /// # Returns
+    /// `Data` - The new Data struct
     pub fn new(id: i32, sound: String, sensor_name: String, time: std::time::SystemTime) -> Data {
         Data {
             id,
@@ -40,6 +50,15 @@ impl Into<serde_json::Value> for Data {
 }
 
 impl Pool {
+    /// Create a new Pool struct
+    /// # Arguments
+    /// * `host` - The host of the database
+    /// * `port` - The port of the database
+    /// * `user` - The user of the database
+    /// * `password` - The password of the database
+    /// * `database` - The database to connect to
+    /// # Returns
+    /// `Pool` - The new Pool struct
     pub async fn new(
         host: Option<String>,
         port: Option<u16>,
@@ -59,6 +78,12 @@ impl Pool {
         Pool { pool }
     }
 
+    /// Create the sensor table if it does not exist
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// 
+    /// # Returns
+    /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn create_sensor_table(&self) -> Result<(), deadpool_postgres::PoolError> {
         let allowed_sensors =
             "'loudness', 'temperature', 'humidity', 'light', 'air_quality', 'oxygen', 'co2'";
@@ -74,6 +99,12 @@ impl Pool {
         Ok(())
     }
 
+    /// Create the table containing the data if it does not exist
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// 
+    /// # Returns
+    /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn create_loudness_table(&self) -> Result<(), deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
         client
@@ -89,6 +120,12 @@ impl Pool {
         Ok(())
     }
 
+    /// Return all the data from the database
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// 
+    /// # Returns
+    /// `Result<Vec<Data>, tokio_postgres::Error>` - The result of the query
     pub async fn get_loudness(&self) -> Result<Vec<Data>, deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
         let statement = client.prepare("SELECT * FROM loudness").await?;
@@ -106,6 +143,12 @@ impl Pool {
         Ok(data)
     }
 
+    /// Return all ids of sensors from the database
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// 
+    /// # Returns
+    /// `Result<Vec<String>, tokio_postgres::Error>` - The result of the query
     pub async fn get_sensor_ids(&self) -> Result<Vec<String>, deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
         let statement = client.prepare("SELECT id FROM sensor").await?;
@@ -119,6 +162,15 @@ impl Pool {
         Ok(data)
     }
 
+    /// Insert loudness data into the database
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// * `sensor_id` - The id of the sensor
+    /// * `level` - The sound level
+    /// * `time` - The time the data was created
+    /// 
+    /// # Returns
+    /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn insert_loudness_data(
         &self,
         sensor_id: String,
