@@ -50,13 +50,19 @@ async fn index() -> impl Responder {
 
 
 async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder {
-    let data = pool.get_loudness().await.unwrap();
-   if data.len() > 0 {
-       HttpResponse::Ok().json(data)
+    let returned = pool.get_loudness().await;
+    let returned = match returned {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Error: {}", e);
+            return HttpResponse::InternalServerError().body("Internal Server Error");
+        }
+    };
+    if returned.is_empty() {
+        return HttpResponse::NotFound().body("No data found");
     } else {
-        HttpResponse::NotFound().body("No data found")
+        HttpResponse::Ok().json(returned)
     }
- 
 
 }
 
