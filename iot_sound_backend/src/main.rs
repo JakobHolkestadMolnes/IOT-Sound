@@ -83,7 +83,6 @@ async fn setup_database(db_client: &Client) -> Result<(), tokio_postgres::Error>
     let create_sensor_table_sql = format!(
         "CREATE TABLE IF NOT EXISTS sensor (
         id text PRIMARY KEY,
-        name text NOT NULL,
         type text NOT NULL CHECK (type IN ({allowed_sensors})),
         location text NOT NULL);"
     );
@@ -137,10 +136,20 @@ async fn listen_for_messages(
 }
 
 async fn insert_into_database(db_client: Client, mut channel: Receiver<(String, Bytes)>) {
+    let mut sensors_cache = get_sensors_from_db(&db_client).await.unwrap();
+
+
     while let Some(data) = channel.recv().await {
         let topic_split: Vec<&str> = data.0.split('/').collect();
         let sensor_id = topic_split.last().unwrap();
         let payload = std::str::from_utf8(&data.1).unwrap();
+
+        if !sensors_cache.contains(&sensor_id.to_string()) {
+            println!("Sensor {} not found in database", sensor_id);
+            add_new_sensor(&db_client, &topic_split).await;
+            sensors_cache = get_sensors_from_db(&db_client).await.unwrap();
+        }
+
         println!("Sensorid: {} Message: {}",sensor_id, payload);
 
         let insert_loudness = db_client
@@ -153,4 +162,39 @@ async fn insert_into_database(db_client: Client, mut channel: Receiver<(String, 
             .await
             .expect("Failed to insert loudness into database");
     }
+}
+
+async fn get_sensors_from_db(db_client: &Client) -> Result<Vec<String>, tokio_postgres::Error> {
+    let get_sensors = db_client
+        .prepare("SELECT id FROM sensor")
+        .await
+        .expect("Failed to prepare get sensors statement");
+    let sensors = db_client
+        .query(&get_sensors, &[])
+        .await
+        .expect("Failed to get sensors from database");
+
+    let mut sensors_cache: Vec<String> = Vec::new();
+    
+    for sensor in sensors.iter() {
+        let sensor_id: String = sensor.get(0);
+        sensors_cache.push(sensor_id);
+    }
+
+    Ok(sensors_cache)
+}
+
+async fn add_new_sensor(db_client: &Client, topic_split: &Vec<&str>) {
+    let sensor_id = topic_split.last().unwrap();
+    let sensor_type = topic_split[3];
+    let sensor_location = format!("{}/{}/{}", topic_split[0], topic_split[1], topic_split[2]);
+
+    let insert_sensor = db_client
+        .prepare("INSERT INTO sensor (id, type, location) VALUES ($1, $2, $3)")
+        .await
+        .expect("Failed to prepare insert statement");
+    db_client
+        .execute(&insert_sensor, &[&sensor_id, &sensor_type, &sensor_location])
+        .await
+        .expect("Failed to insert sensor into database");
 }
