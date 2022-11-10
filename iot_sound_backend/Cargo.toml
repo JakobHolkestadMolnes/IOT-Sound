@@ -11,3 +11,5 @@ dotenv = "0.15.0"
 tokio = { version = "1.21.2", features = ["full"] }
 tokio-postgres = "0.7.7"
 bytes = "1"
+
+iot_sound_database = { path = "../iot_sound_database" }

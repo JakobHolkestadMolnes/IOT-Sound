@@ -735,6 +735,7 @@ version = "0.1.0"
 dependencies = [
  "bytes",
  "dotenv",
+ "iot_sound_database",
  "rumqttc",
  "tokio",
  "tokio-postgres",
