@@ -173,8 +173,8 @@ impl Pool {
     /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn insert_loudness_data(
         &self,
-        sensor_id: String,
-        level: String,
+        sensor_id: &str,
+        level: &str,
         time: std::time::SystemTime,
     ) -> Result<(), deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
@@ -183,6 +183,31 @@ impl Pool {
             .await?;
         client
             .execute(&statement, &[&sensor_id, &level, &time])
+            .await?;
+        Ok(())
+    }
+
+    /// Insert sensor data into the database
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// * `sensor_id` - The id of the sensor
+    /// * `sensor_type` - The type of the sensor
+    /// * `location` - The location of the sensor
+    /// 
+    /// # Returns
+    /// `Result<(), tokio_postgres::Error>` - The result of the query
+    pub async fn insert_new_sensor(
+        &self,
+        sensor_id: &str,
+        sensor_type: &str,
+        sensor_location: &str,
+    ) -> Result<(), deadpool_postgres::PoolError> {
+        let client = self.pool.get().await?;
+        let statement = client
+            .prepare("INSERT INTO sensor (id, type, location) VALUES ($1, $2, $3)")
+            .await?;
+        client
+            .execute(&statement, &[&sensor_id, &sensor_type, &sensor_location])
             .await?;
         Ok(())
     }
