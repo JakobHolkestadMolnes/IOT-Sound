@@ -3,6 +3,7 @@ members = [
     "iot_sound_backend",
     "iot_sound_sensor",
     "iot_sound_api",
+    "iot_sound_database",
 ]
 
 
