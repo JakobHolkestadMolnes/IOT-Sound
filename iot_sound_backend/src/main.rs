@@ -1,11 +1,13 @@
 use bytes::Bytes;
 use dotenv;
 use iot_sound_database::{self, Pool};
+use json::JsonValue;
 use rumqttc::{AsyncClient, ClientError, MqttOptions, QoS};
+use serde::{Deserialize, Serialize};
+use serde_json;
 use std::env::{self, VarError};
 use std::time::Duration;
 use tokio::sync::mpsc::{channel, Receiver, Sender};
-
 const MQTT_ID_BACKEND: &str = "g6backend";
 const MQTT_TOPIC: &str = "ntnu/+/+/loudness/group06/+";
 
@@ -138,7 +140,16 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
     while let Some(data) = channel.recv().await {
         let topic_split: Vec<&str> = data.0.split('/').collect();
         let sensor_id = topic_split.last().unwrap();
-        let payload = std::str::from_utf8(&data.1).unwrap();
+
+        let data: &str = match std::str::from_utf8(&data.1) {
+            Ok(data) => data,
+            Err(e) => {
+                println!("Error converting bytes to string: {}", e);
+                continue;
+            }
+        };
+
+        let payload = LoudnessData::parse_csv(data);
 
         if !sensors_cache.contains(&sensor_id.to_string()) {
             println!("Sensor {} not found in database", sensor_id);
@@ -148,10 +159,14 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
                 .await
                 .expect("Sensor ids should be in db");
         }
-        let now = std::time::SystemTime::now(); //TODO time should come from sensor
-        println!("Sensorid: {} Message: {}", sensor_id, payload);
+
+        println!("Sensorid: {} Message: {}", sensor_id, payload.db_level);
         db_pool
-            .insert_loudness_data(sensor_id, payload, now)
+            .insert_loudness_data(
+                sensor_id,
+                &format!("{}", payload.db_level),
+                payload.timestamp,
+            )
             .await
             .expect("Inserting loudness into db should work");
     }
@@ -166,4 +181,48 @@ async fn add_new_sensor(db_pool: &Pool, topic_split: &Vec<&str>) {
         .insert_new_sensor(&sensor_id, &sensor_type, &sensor_location)
         .await
         .expect("Inserting new sensor into db should work");
+}
+
+/// parse a json payload as struct
+///
+fn parse_payload_as_json(payload: &str) -> LoudnessData {
+    let parsed = serde_json::from_str(payload);
+    let parsed = match parsed {
+        Ok(parsed) => parsed,
+        Err(e) => panic!("Error parsing payload as json: {}", e),
+    };
+    parsed
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct LoudnessData {
+    db_level: f64,
+    timestamp: std::time::SystemTime,
+}
+impl LoudnessData {
+    fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
+        LoudnessData {
+            db_level,
+            timestamp: timestamp,
+        }
+    }
+    fn parse_csv(csv: &str) -> Self {
+        let mut iter = csv.split(",");
+        let db_level = iter.next().unwrap().parse::<f64>().unwrap();
+        let timestamp = iter.next().unwrap().parse::<u64>().unwrap();
+        LoudnessData::new(
+            db_level,
+            std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp),
+        )
+    }
+    fn to_csv(&self) -> String {
+        format!(
+            "{},{}",
+            self.db_level,
+            self.timestamp
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        )
+    }
 }

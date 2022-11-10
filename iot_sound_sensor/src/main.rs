@@ -1,5 +1,7 @@
-use json;
+use json::{self, JsonValue};
 use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
+use serde::{Deserialize, Serialize};
+use serde_json;
 use std::{env, error::Error, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
@@ -72,17 +74,37 @@ impl Message {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 struct JsonDblevel {
     db_level: f64,
+    timestamp: std::time::SystemTime,
 }
 
 impl JsonDblevel {
-    fn new(db_level: f64) -> Self {
-        JsonDblevel { db_level }
+    fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
+        JsonDblevel {
+            db_level,
+            timestamp: timestamp,
+        }
     }
-
-    fn to_string(&self) -> String {
-        json::from(self.db_level).to_string()
+    fn parse_csv(csv: &str) -> Self {
+        let mut iter = csv.split(",");
+        let db_level = iter.next().unwrap().parse::<f64>().unwrap();
+        let timestamp = iter.next().unwrap().parse::<u64>().unwrap();
+        JsonDblevel::new(
+            db_level,
+            std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp),
+        )
+    }
+    fn to_csv(&self) -> String {
+        format!(
+            "{},{}",
+            self.db_level,
+            self.timestamp
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        )
     }
 }
 
@@ -92,8 +114,11 @@ impl JsonDblevel {
 async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error>> {
     let mut i = 0;
     loop {
-        let message = JsonDblevel::new(i as f64).to_string();
-        match channel.send(Message::payload_from_string(message)).await {
+        let message = JsonDblevel::new(i as f64, std::time::SystemTime::now());
+        match channel
+            .send(Message::payload_from_string(message.to_csv()))
+            .await
+        {
             Ok(_) => {
                 //println!("message sent to client: {i}");
                 tokio::time::sleep(Duration::from_secs(2)).await;

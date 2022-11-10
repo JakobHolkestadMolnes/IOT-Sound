@@ -81,7 +81,7 @@ impl Pool {
     /// Create the sensor table if it does not exist
     /// # Arguments
     /// * `self` - The Pool struct
-    /// 
+    ///
     /// # Returns
     /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn create_sensor_table(&self) -> Result<(), deadpool_postgres::PoolError> {
@@ -102,7 +102,7 @@ impl Pool {
     /// Create the table containing the data if it does not exist
     /// # Arguments
     /// * `self` - The Pool struct
-    /// 
+    ///
     /// # Returns
     /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn create_loudness_table(&self) -> Result<(), deadpool_postgres::PoolError> {
@@ -123,7 +123,7 @@ impl Pool {
     /// Return all the data from the database
     /// # Arguments
     /// * `self` - The Pool struct
-    /// 
+    ///
     /// # Returns
     /// `Result<Vec<Data>, tokio_postgres::Error>` - The result of the query
     pub async fn get_loudness(&self) -> Result<Vec<Data>, deadpool_postgres::PoolError> {
@@ -146,7 +146,7 @@ impl Pool {
     /// Return all ids of sensors from the database
     /// # Arguments
     /// * `self` - The Pool struct
-    /// 
+    ///
     /// # Returns
     /// `Result<Vec<String>, tokio_postgres::Error>` - The result of the query
     pub async fn get_sensor_ids(&self) -> Result<Vec<String>, deadpool_postgres::PoolError> {
@@ -168,7 +168,7 @@ impl Pool {
     /// * `sensor_id` - The id of the sensor
     /// * `level` - The sound level
     /// * `time` - The time the data was created
-    /// 
+    ///
     /// # Returns
     /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn insert_loudness_data(
@@ -193,7 +193,7 @@ impl Pool {
     /// * `sensor_id` - The id of the sensor
     /// * `sensor_type` - The type of the sensor
     /// * `location` - The location of the sensor
-    /// 
+    ///
     /// # Returns
     /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn insert_new_sensor(

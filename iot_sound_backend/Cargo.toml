@@ -13,3 +13,6 @@ tokio-postgres = "0.7.7"
 bytes = "1"
 
 iot_sound_database = { path = "../iot_sound_database" }
+json = "0.12.4"
+serde_json = "1.0.87"
+serde = { version = "1.0.147", features = ["derive"] }

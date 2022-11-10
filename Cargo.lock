@@ -736,7 +736,10 @@ dependencies = [
  "bytes",
  "dotenv",
  "iot_sound_database",
+ "json",
  "rumqttc",
+ "serde",
+ "serde_json",
  "tokio",
  "tokio-postgres",
 ]
@@ -761,6 +764,8 @@ dependencies = [
  "dotenv",
  "json",
  "rumqttc",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 
