@@ -1,5 +1,4 @@
 use bytes::Bytes;
-use dotenv;
 use iot_sound_database::{self, Pool};
 use rumqttc::{AsyncClient, ClientError, MqttOptions, QoS};
 use serde::{Deserialize, Serialize};
@@ -79,10 +78,7 @@ fn get_env_variables() -> Result<(String, String, String, String, String, String
         || env::var("DB_PASSWORD").is_err()
         || env::var("DB_NAME").is_err()
     {
-        println!(
-            "\x1b[33m{}\x1b[0m",
-            "Environment variables not set. Loading .env file"
-        );
+        println!("\x1b[33mEnvironment variables not set. Loading .env file\x1b[0m");
         dotenv::dotenv().ok();
     }
     // if any of the env are not set, return early with error
@@ -176,18 +172,16 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
     }
 }
 
-async fn add_new_sensor(db_pool: &Pool, topic_split: &Vec<&str>) {
+async fn add_new_sensor(db_pool: &Pool, topic_split: &[&str]) {
     let sensor_id = topic_split.last().unwrap();
     let sensor_type = topic_split[3];
     let sensor_location = format!("{}/{}/{}", topic_split[0], topic_split[1], topic_split[2]);
 
     db_pool
-        .insert_new_sensor(&sensor_id, &sensor_type, &sensor_location)
+        .insert_new_sensor(sensor_id, sensor_type, &sensor_location)
         .await
         .expect("Inserting new sensor into db should work");
 }
-
-
 
 #[derive(Debug, Serialize, Deserialize)]
 struct LoudnessData {
@@ -198,11 +192,11 @@ impl LoudnessData {
     fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
         LoudnessData {
             db_level,
-            timestamp: timestamp,
+            timestamp,
         }
     }
     fn parse_csv(csv: &str) -> Self {
-        let mut iter = csv.split(",");
+        let mut iter = csv.split(',');
         let db_level = iter.next().unwrap().parse::<f64>().unwrap();
         let timestamp = iter.next().unwrap().parse::<u64>().unwrap();
         LoudnessData::new(

@@ -82,7 +82,7 @@ impl JsonDblevel {
     fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
         JsonDblevel {
             db_level,
-            timestamp: timestamp,
+            timestamp,
         }
     }
     fn to_csv(&self) -> String {

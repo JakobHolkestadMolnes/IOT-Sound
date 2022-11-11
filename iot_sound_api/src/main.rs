@@ -1,11 +1,6 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use dotenv;
-use iot_sound_database;
 use std::env;
-
-
-
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -21,7 +16,7 @@ async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder 
         }
     };
     if returned.is_empty() {
-        return HttpResponse::NotFound().body("No data found");
+        HttpResponse::NotFound().body("No data found")
     } else {
         HttpResponse::Ok().json(returned)
     }
@@ -37,7 +32,7 @@ async fn get_sensors(pool: web::Data<iot_sound_database::Pool>) -> impl Responde
         }
     };
     if returned.is_empty() {
-        return HttpResponse::NotFound().body("No data found");
+        HttpResponse::NotFound().body("No data found")
     } else {
         HttpResponse::Ok().json(returned)
     }
@@ -50,10 +45,7 @@ async fn main() -> std::io::Result<()> {
         || env::var("DB_HOST").is_err()
         || env::var("DB_PORT").is_err()
     {
-        println!(
-            "\x1b[33m{}\x1b[0m",
-            "Environment variables not set. Loading .env file"
-        );
+        println!("\x1b[33mEnvironment variables not set. Loading .env file\x1b[0m");
         dotenv::dotenv().ok();
     }
 

@@ -54,13 +54,13 @@ impl Data {
 }
 
 // implement a trait for vec of data
-impl Into<serde_json::Value> for Data {
-    fn into(self) -> serde_json::Value {
+impl From<Data> for serde_json::Value {
+    fn from(data: Data) -> Self {
         json!({
-            "id": self.id,
-            "sensor_name": self.sensor_name,
-            "sound": self.sound,
-            "time": self.time,
+            "id": data.id,
+            "sensor_name": data.sensor_name,
+            "sound": data.sound,
+            "time": data.time,
         })
     }
 }
@@ -83,11 +83,11 @@ impl Pool {
         dbname: Option<String>,
     ) -> Result<Pool, CreatePoolError> {
         let config = deadpool_postgres::Config {
-            user: user,
-            password: password,
-            host: host,
-            port: port,
-            dbname: dbname,
+            user,
+            password,
+            host,
+            port,
+            dbname,
             ..Default::default()
         };
         let pool = config.create_pool(None, tokio_postgres::NoTls);
