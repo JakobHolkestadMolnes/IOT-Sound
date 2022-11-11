@@ -1,37 +1,11 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use deadpool_postgres;
 use dotenv;
 use iot_sound_database;
-use serde::{Deserialize, Serialize};
-use serde_json::json;
 use std::env;
-use tokio;
-use tokio_postgres::{self, types::Timestamp};
 
-struct Data {
-    id: i32,
-    sound: String,
-    time: std::time::SystemTime,
-}
 
-// implement a trait for vec of data
-impl Data {
-    fn new(id: i32, sound: String, time: std::time::SystemTime) -> Data {
-        Data { id, sound, time }
-    }
-}
 
-// implement a trait for vec of data
-impl Into<serde_json::Value> for Data {
-    fn into(self) -> serde_json::Value {
-        json!({
-            "id": self.id,
-            "sound": self.sound,
-            "time": self.time,
-        })
-    }
-}
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -91,6 +65,11 @@ async fn main() -> std::io::Result<()> {
         Some(env::var("DB_NAME").unwrap()),
     )
     .await;
+
+    let pool = match pool {
+        Ok(pool) => pool,
+        Err(e) => panic!("Error creating database pool: {}", e),
+    };
 
     HttpServer::new(move || {
         App::new()
