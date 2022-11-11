@@ -1,4 +1,4 @@
-use deadpool_postgres;
+use deadpool_postgres::{self, CreatePoolError};
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
 
@@ -81,7 +81,7 @@ impl Pool {
         user: Option<String>,
         password: Option<String>,
         dbname: Option<String>,
-    ) -> Pool {
+    ) -> Result<Pool, CreatePoolError> {
         let config = deadpool_postgres::Config {
             user: user,
             password: password,
@@ -90,8 +90,15 @@ impl Pool {
             dbname: dbname,
             ..Default::default()
         };
-        let pool = config.create_pool(None, tokio_postgres::NoTls).unwrap();
-        Pool { pool }
+        let pool = config.create_pool(None, tokio_postgres::NoTls);
+        let pool = match pool {
+            Ok(pool) => pool,
+            Err(e) => {
+                println!("Error: {}", e);
+                return Err(e);
+            }
+        };
+        Ok(Pool { pool })
     }
 
     /// Create the sensor table if it does not exist
