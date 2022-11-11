@@ -1,13 +1,12 @@
 use bytes::Bytes;
 use dotenv;
 use iot_sound_database::{self, Pool};
-use json::JsonValue;
 use rumqttc::{AsyncClient, ClientError, MqttOptions, QoS};
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::env::{self, VarError};
 use std::time::Duration;
 use tokio::sync::mpsc::{channel, Receiver, Sender};
+
 const MQTT_ID_BACKEND: &str = "g6backend";
 const MQTT_TOPIC: &str = "ntnu/+/+/loudness/group06/+";
 
@@ -41,6 +40,11 @@ async fn main() {
         Some(db_name),
     )
     .await;
+
+    let db_pool = match db_pool {
+        Ok(pool) => pool,
+        Err(e) => panic!("Error creating database pool: {}", e),
+    };
 
     if let Err(e) = db_pool.create_sensor_table().await {
         panic!("Error creating sensor table: {}", e);
@@ -183,16 +187,7 @@ async fn add_new_sensor(db_pool: &Pool, topic_split: &Vec<&str>) {
         .expect("Inserting new sensor into db should work");
 }
 
-/// parse a json payload as struct
-///
-fn parse_payload_as_json(payload: &str) -> LoudnessData {
-    let parsed = serde_json::from_str(payload);
-    let parsed = match parsed {
-        Ok(parsed) => parsed,
-        Err(e) => panic!("Error parsing payload as json: {}", e),
-    };
-    parsed
-}
+
 
 #[derive(Debug, Serialize, Deserialize)]
 struct LoudnessData {
@@ -213,16 +208,6 @@ impl LoudnessData {
         LoudnessData::new(
             db_level,
             std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp),
-        )
-    }
-    fn to_csv(&self) -> String {
-        format!(
-            "{},{}",
-            self.db_level,
-            self.timestamp
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_secs()
         )
     }
 }
