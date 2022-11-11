@@ -7,6 +7,22 @@ use serde_json::{self, json};
 pub struct Pool {
     pool: deadpool_postgres::Pool,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Sensor {
+    id: String,
+    type_: String,
+    location: String,
+}
+
+impl Sensor {
+    pub fn new(id: String, type_: String, location: String) -> Sensor {
+        Sensor {
+            id,
+            type_,
+            location,
+        }
+    }
+}
 
 /// Struct for data from the database that can be converted to json
 #[derive(Debug, Serialize, Deserialize)]
@@ -138,6 +154,27 @@ impl Pool {
                 sensor_name: row.get(1),
                 sound: row.get(2),
                 time: row.get(3),
+            });
+        }
+        Ok(data)
+    }
+
+    /// Return all sensors from the database
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// # Returns
+    /// `Result<Vec<Sensor>, tokio_postgres::Error>` - The result of the query
+    pub async fn get_sensors(&self) -> Result<Vec<Sensor>, deadpool_postgres::PoolError> {
+        let client = self.pool.get().await?;
+        let statement = client.prepare("SELECT * FROM sensor").await?;
+        let rows = client.query(&statement, &[]).await?;
+        let mut data = Vec::new();
+
+        for row in rows {
+            data.push(Sensor {
+                id: row.get(0),
+                type_: row.get(1),
+                location: row.get(2),
             });
         }
         Ok(data)

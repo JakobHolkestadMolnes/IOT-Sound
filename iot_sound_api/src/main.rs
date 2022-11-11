@@ -53,6 +53,22 @@ async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder 
     }
 }
 
+async fn get_sensors(pool: web::Data<iot_sound_database::Pool>) -> impl Responder {
+    let returned = pool.get_sensors().await;
+    let returned = match returned {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Error: {}", e);
+            return HttpResponse::InternalServerError().body("Internal Server Error");
+        }
+    };
+    if returned.is_empty() {
+        return HttpResponse::NotFound().body("No data found");
+    } else {
+        HttpResponse::Ok().json(returned)
+    }
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     if env::var("DB_USER").is_err()
@@ -81,6 +97,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .route("/", web::get().to(index))
             .route("/sound", web::get().to(get_sound))
+            .route("/sensors", web::get().to(get_sensors))
             .wrap(Cors::permissive())
     })
     .bind("localhost:8081")?
