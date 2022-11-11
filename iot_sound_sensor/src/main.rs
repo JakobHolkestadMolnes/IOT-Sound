@@ -1,7 +1,5 @@
-use json::{self, JsonValue};
 use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::{env, error::Error, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
@@ -86,15 +84,6 @@ impl JsonDblevel {
             db_level,
             timestamp: timestamp,
         }
-    }
-    fn parse_csv(csv: &str) -> Self {
-        let mut iter = csv.split(",");
-        let db_level = iter.next().unwrap().parse::<f64>().unwrap();
-        let timestamp = iter.next().unwrap().parse::<u64>().unwrap();
-        JsonDblevel::new(
-            db_level,
-            std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp),
-        )
     }
     fn to_csv(&self) -> String {
         format!(
