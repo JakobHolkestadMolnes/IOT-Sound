@@ -316,18 +316,18 @@ checksum = "ec8a7b6a70fde80372154c65702f00a0f56f3e1c36abbc6c440484be248856db"
 
 [[package]]
 name = "bytestring"
-version = "1.1.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86b6a75fd3048808ef06af5cd79712be8111960adaf89d90250974b38fc3928a"
+checksum = "f7f83e57d9154148e355404702e2694463241880b939570d7c97c014da7a69a1"
 dependencies = [
  "bytes",
 ]
 
 [[package]]
 name = "cc"
-version = "1.0.74"
+version = "1.0.76"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "581f5dba903aac52ea3feb5ec4810848460ee833876f1f9b0fdeab1f19091574"
+checksum = "76a284da2e6fe2092f2353e51713435363112dfd60030e22add80be333fb928f"
 dependencies = [
  "jobserver",
 ]
@@ -720,12 +720,8 @@ version = "0.1.0"
 dependencies = [
  "actix-cors",
  "actix-web",
- "deadpool-postgres",
  "dotenv",
  "iot_sound_database",
- "serde",
- "serde_json",
- "tokio",
  "tokio-postgres",
 ]
 
@@ -736,12 +732,9 @@ dependencies = [
  "bytes",
  "dotenv",
  "iot_sound_database",
- "json",
  "rumqttc",
  "serde",
- "serde_json",
  "tokio",
- "tokio-postgres",
 ]
 
 [[package]]
@@ -749,11 +742,8 @@ name = "iot_sound_database"
 version = "0.1.0"
 dependencies = [
  "deadpool-postgres",
- "dotenv",
- "rumqttc",
  "serde",
  "serde_json",
- "tokio",
  "tokio-postgres",
 ]
 
@@ -762,10 +752,8 @@ name = "iot_sound_sensor"
 version = "0.1.0"
 dependencies = [
  "dotenv",
- "json",
  "rumqttc",
  "serde",
- "serde_json",
  "tokio",
 ]
 
@@ -792,12 +780,6 @@ checksum = "49409df3e3bf0856b916e2ceaca09ee28e6871cf7d9ce97a692cacfdb2a25a47"
 dependencies = [
  "wasm-bindgen",
 ]
-
-[[package]]
-name = "json"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "078e285eafdfb6c4b434e0d31e8cfcb5115b651496faca5749b88fafd4f23bfd"
 
 [[package]]
 name = "language-tags"
@@ -907,9 +889,9 @@ dependencies = [
 
 [[package]]
 name = "num_cpus"
-version = "1.13.1"
+version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19e64526ebdee182341572e50e9ad03965aa510cd94427a4549448f285e957a1"
+checksum = "f6058e64324c71e02bc2b150e4f3bc8286db6c83092132ffa3f6b1eab0f9def5"
 dependencies = [
  "hermit-abi",
  "libc",
@@ -1049,9 +1031,9 @@ dependencies = [
 
 [[package]]
 name = "ppv-lite86"
-version = "0.2.16"
+version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
+checksum = "5b40af805b3121feab8a3c29f04d8ad262fa8e0561883e7653e024ae4479e6de"
 
 [[package]]
 name = "proc-macro2"
