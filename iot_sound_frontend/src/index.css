@@ -20,6 +20,34 @@
     --g7: #4682B4;
   }
 
+    .bg-g1 {
+        background-color: var(--g1);
+    }
+    .bg-g2 {
+        background-color: var(--g2);
+    }
+    .bg-g3 {
+        background-color: var(--g3);
+    }
+    .bg-g4 {
+        background-color: var(--g4);
+    }
+    .bg-g5 {
+        background-color: var(--g5);
+    }
+    .bg-g6 {
+        background-color: var(--g6);
+    }
+    .bg-g7 {
+        background-color: var(--g7);
+    }
+    .bg-g8 {
+        background-color: var(--g8);
+    }
+    .bg-g9 {
+        background-color: var(--g9);
+    }
+
 /* tailwind tag */
 .nodrag {
     -webkit-user-drag: none;

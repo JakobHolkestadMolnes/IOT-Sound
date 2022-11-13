@@ -52,10 +52,20 @@ async fn get_sound_sorted_by_sensor(pool: web::Data<iot_sound_database::Pool>) -
         data_by_sensor.push(sensor_data);
     }
 
-    if data_by_sensor.is_empty() {
+    let mut date_time_sensor = Vec::new();
+    // add dateTimes to each value
+    for sensor_data in &mut data_by_sensor {
+        let mut date_time = Vec::new();
+        for row in sensor_data {
+           date_time.push(row.get_date_time_string());
+        }
+        date_time_sensor.push(date_time);
+    }
+
+    if date_time_sensor.is_empty() {
         HttpResponse::NotFound().body("No data found")
     } else {
-        HttpResponse::Ok().json(data_by_sensor)
+        HttpResponse::Ok().json(date_time_sensor)
     }
 }
 
