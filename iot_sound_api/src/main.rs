@@ -22,6 +22,43 @@ async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder 
     }
 }
 
+async fn get_sound_sorted_by_sensor(pool: web::Data<iot_sound_database::Pool>) -> impl Responder {
+    let sensors = pool.get_sensor_ids().await;
+    let sensors = match sensors {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Error: {}", e);
+            return HttpResponse::InternalServerError().body("Internal Server Error");
+        }
+    };
+
+    let data = pool.get_loudness().await;
+    let data = match data {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Error: {}", e);
+            return HttpResponse::InternalServerError().body("Internal Server Error");
+        }
+    };
+
+    let mut data_by_sensor = Vec::new();
+    for sensor in sensors {
+        let mut sensor_data = Vec::new();
+        for row in &data {
+            if row.get_sensor_name() == sensor {
+                sensor_data.push(row.clone());
+            }
+        }
+        data_by_sensor.push(sensor_data);
+    }
+
+    if data_by_sensor.is_empty() {
+        HttpResponse::NotFound().body("No data found")
+    } else {
+        HttpResponse::Ok().json(data_by_sensor)
+    }
+}
+
 async fn get_sensors(pool: web::Data<iot_sound_database::Pool>) -> impl Responder {
     let returned = pool.get_sensors().await;
     let returned = match returned {
@@ -69,6 +106,7 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(index))
             .route("/sound", web::get().to(get_sound))
             .route("/sensors", web::get().to(get_sensors))
+            .route("/sound/sorted", web::get().to(get_sound_sorted_by_sensor))
             .wrap(Cors::permissive())
     })
     .bind("localhost:8081")?

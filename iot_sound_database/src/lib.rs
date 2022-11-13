@@ -51,6 +51,13 @@ impl Data {
             time,
         }
     }
+
+    pub fn get_id(&self) -> i32 {
+        self.id
+    }
+    pub fn get_sensor_name(&self) -> String {
+        self.sensor_name.clone()
+    }
 }
 
 // implement a trait for vec of data
