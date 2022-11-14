@@ -61,11 +61,11 @@ const content =   () => {
                         return (
                             <div className="text-black grid bg-g5 p-4 m-2 rounded-xl ">
                                 <h3 className="text-2xl font-bold">{sensor[0].sensor_name}</h3>
-                                <LineChart width={600} height={300} data={sensor}>
+                                <LineChart width={600} height={300} data={sensor} >
+                                    <YAxis type='category' domain={['auto','auto']} allowDataOverflow={false}  stroke='#ffffff'/>
                                     <Line type="monotone" dataKey="sound" stroke="#dd23ea" />
                                     <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
                                     <XAxis dataKey="time_string" stroke='#ffffff' />
-                                    <YAxis stroke='#ffffff'/>
                                     <Tooltip />
                                     <Legend  />
                                 </LineChart>
