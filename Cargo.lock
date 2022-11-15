@@ -856,6 +856,7 @@ version = "0.1.0"
 dependencies = [
  "dotenv",
  "iot_sound_backend",
+ "rand",
  "rumqttc",
  "serde",
  "tokio",

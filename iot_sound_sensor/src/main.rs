@@ -1,4 +1,5 @@
-use iot_sound_backend::loudness_data::LoudnessData;
+mod loudness_sensor_simulator;
+
 use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
 use std::{env, error::Error, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
@@ -71,15 +72,17 @@ impl Message {
 ///
 /// * `channel` - The channel to send the messages to
 async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error>> {
-    let mut i = 0;
+    let mut loudness_sensor_simulator = loudness_sensor_simulator::LoudnessSensorSimulator::new();
     loop {
-        let message = LoudnessData::new(i as f32, std::time::SystemTime::now());
+        let loudness = loudness_sensor_simulator.get_loudness_data();
+        let message = loudness.to_csv();
+
         match channel
-            .send(Message::_payload_from_str_slice(&message.to_csv()))
+            .send(Message::_payload_from_str_slice(&message))
             .await
         {
             Ok(_) => {
-                //println!("message sent to client: {i}");
+                println!("Message sent to mqtt publisher: {}", &message);
                 tokio::time::sleep(Duration::from_secs(2)).await;
             }
             Err(e) => {
@@ -87,7 +90,6 @@ async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error
                 return Err(Box::new(e));
             }
         };
-        i += 1;
     }
 }
 
