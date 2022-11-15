@@ -73,7 +73,7 @@ impl Message {
 async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error>> {
     let mut i = 0;
     loop {
-        let message = LoudnessData::new(i as f64, std::time::SystemTime::now());
+        let message = LoudnessData::new(i as f32, std::time::SystemTime::now());
         match channel
             .send(Message::_payload_from_str_slice(&message.to_csv()))
             .await

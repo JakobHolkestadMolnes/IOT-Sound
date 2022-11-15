@@ -7,7 +7,7 @@ pub mod loudness_data {
     /// with a timestamp of when the measurement was taken.
     #[derive(Debug, Serialize, Deserialize)]
     pub struct LoudnessData {
-        db_level: f64,
+        db_level: f32,
         timestamp: std::time::SystemTime,
     }
     /// Create a new LoudnessData
@@ -17,14 +17,14 @@ pub mod loudness_data {
     /// * `db_level` - The loudness in decibel
     /// * `timestamp` - The time the loudness was measured
     impl LoudnessData {
-        pub fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
+        pub fn new(db_level: f32, timestamp: std::time::SystemTime) -> Self {
             LoudnessData {
                 db_level,
                 timestamp,
             }
         }
         /// Returns db_level of the LoudnessData
-        pub fn db_level(&self) -> f64 {
+        pub fn db_level(&self) -> f32 {
             self.db_level
         }
         /// Returns timestamp of the LoudnessData
@@ -39,7 +39,7 @@ pub mod loudness_data {
         /// * `csv` - The csv string to parse
         pub fn parse_csv(csv: &str) -> Self {
             let mut iter = csv.split(',');
-            let db_level = iter.next().unwrap().parse::<f64>().unwrap();
+            let db_level = iter.next().unwrap().parse::<f32>().unwrap();
             let timestamp = iter.next().unwrap().parse::<u64>().unwrap();
             LoudnessData::new(
                 db_level,
