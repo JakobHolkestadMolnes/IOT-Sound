@@ -59,7 +59,7 @@ const content =   () => {
                     /* create a chart for all the data based on sensor name */
                     data.map((sensor:Root, index) => {
                         return (
-                            <div className="text-black grid bg-g5 p-4 m-2 rounded-xl ">
+                            <div className="text-black grid bg-g5 p-4 m-2 rounded-xl " key={sensor[0].sensor_name}>
                                 <h3 className="text-2xl font-bold">{sensor[0].sensor_name}</h3>
                                 <LineChart width={600} height={300} data={sensor} >
                                     <YAxis type='category' domain={['auto','auto']} allowDataOverflow={false}  stroke='#ffffff'/>
