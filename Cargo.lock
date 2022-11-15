@@ -855,6 +855,7 @@ name = "iot_sound_sensor"
 version = "0.1.0"
 dependencies = [
  "dotenv",
+ "iot_sound_backend",
  "rumqttc",
  "serde",
  "tokio",

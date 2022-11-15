@@ -10,3 +10,5 @@ rumqttc = "0.17.0"
 dotenv = "0.15.0"
 tokio = { version = "1.21.2", features = ["full"] }
 serde = { version = "1.0.147", features = ["derive"] }
+
+iot_sound_backend = { path = "../iot_sound_backend" }

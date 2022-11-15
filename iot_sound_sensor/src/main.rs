@@ -1,5 +1,5 @@
+use iot_sound_backend::loudness_data::LoudnessData;
 use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
-use serde::{Deserialize, Serialize};
 use std::{env, error::Error, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
@@ -64,31 +64,6 @@ impl Message {
         Message {
             payload: payload.bytes().collect(),
         }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct LoudnessData {
-    db_level: f64,
-    timestamp: std::time::SystemTime,
-}
-
-impl LoudnessData {
-    fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
-        LoudnessData {
-            db_level,
-            timestamp,
-        }
-    }
-    fn to_csv(&self) -> String {
-        format!(
-            "{},{}",
-            self.db_level,
-            self.timestamp
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_secs()
-        )
     }
 }
 

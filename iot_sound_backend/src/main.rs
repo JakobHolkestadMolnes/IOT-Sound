@@ -1,7 +1,7 @@
 use bytes::Bytes;
+use iot_sound_backend::loudness_data::LoudnessData;
 use iot_sound_database::{self, Pool};
 use rumqttc::{AsyncClient, ClientError, MqttOptions, QoS};
-use serde::{Deserialize, Serialize};
 use std::env::{self, VarError};
 use std::time::Duration;
 use tokio::sync::mpsc::{channel, Receiver, Sender};
@@ -160,12 +160,12 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
                 .expect("Sensor ids should be in db");
         }
 
-        println!("Sensorid: {} Message: {}", sensor_id, payload.db_level);
+        println!("Sensorid: {} Message: {}", sensor_id, payload.db_level());
         db_pool
             .insert_loudness_data(
                 sensor_id,
-                &format!("{}", payload.db_level),
-                payload.timestamp,
+                &format!("{}", payload.db_level()),
+                payload.timestamp(),
             )
             .await
             .expect("Inserting loudness into db should work");
@@ -181,27 +181,4 @@ async fn add_new_sensor(db_pool: &Pool, topic_split: &[&str]) {
         .insert_new_sensor(sensor_id, sensor_type, &sensor_location)
         .await
         .expect("Inserting new sensor into db should work");
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct LoudnessData {
-    db_level: f64,
-    timestamp: std::time::SystemTime,
-}
-impl LoudnessData {
-    fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
-        LoudnessData {
-            db_level,
-            timestamp,
-        }
-    }
-    fn parse_csv(csv: &str) -> Self {
-        let mut iter = csv.split(',');
-        let db_level = iter.next().unwrap().parse::<f64>().unwrap();
-        let timestamp = iter.next().unwrap().parse::<u64>().unwrap();
-        LoudnessData::new(
-            db_level,
-            std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp),
-        )
-    }
 }
