@@ -60,11 +60,6 @@ struct Message {
     payload: Vec<u8>,
 }
 impl Message {
-    fn payload_from_string(payload: String) -> Self {
-        Message {
-            payload: payload.bytes().collect(),
-        }
-    }
     fn _payload_from_str_slice(payload: &str) -> Self {
         Message {
             payload: payload.bytes().collect(),
@@ -73,14 +68,14 @@ impl Message {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct JsonDblevel {
+struct LoudnessData {
     db_level: f64,
     timestamp: std::time::SystemTime,
 }
 
-impl JsonDblevel {
+impl LoudnessData {
     fn new(db_level: f64, timestamp: std::time::SystemTime) -> Self {
-        JsonDblevel {
+        LoudnessData {
             db_level,
             timestamp,
         }
@@ -103,9 +98,9 @@ impl JsonDblevel {
 async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error>> {
     let mut i = 0;
     loop {
-        let message = JsonDblevel::new(i as f64, std::time::SystemTime::now());
+        let message = LoudnessData::new(i as f64, std::time::SystemTime::now());
         match channel
-            .send(Message::payload_from_string(message.to_csv()))
+            .send(Message::_payload_from_str_slice(&message.to_csv()))
             .await
         {
             Ok(_) => {
