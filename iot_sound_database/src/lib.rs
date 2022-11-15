@@ -1,7 +1,7 @@
+use chrono::{DateTime, Utc};
 use deadpool_postgres::{self, CreatePoolError};
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
-use chrono::{DateTime, Utc};
 
 /// Struct that contains a pool of postgres connections
 #[derive(Clone)]
@@ -42,8 +42,6 @@ pub struct DataWithDateTimeString {
     time_string: String,
 }
 
-
-
 // implement a trait for vec of data
 impl Data {
     /// Create a new Data struct
@@ -78,10 +76,9 @@ impl Data {
             sensor_name: self.sensor_name.clone(),
             sound: self.sound.clone(),
             time: self.time,
-            time_string : datetime_string,
+            time_string: datetime_string,
         }
     }
-    
 }
 
 // implement a trait for vec of data

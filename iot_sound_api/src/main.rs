@@ -57,7 +57,7 @@ async fn get_sound_sorted_by_sensor(pool: web::Data<iot_sound_database::Pool>) -
     for sensor_data in &mut data_by_sensor {
         let mut date_time = Vec::new();
         for row in sensor_data {
-           date_time.push(row.get_date_time_string());
+            date_time.push(row.get_date_time_string());
         }
         date_time_sensor.push(date_time);
     }
