@@ -61,13 +61,13 @@ const content =   () => {
                         return (
                             <div className="text-black grid bg-g5 p-4 m-2 rounded-xl " key={sensor[0].sensor_name}>
                                 <h3 className="text-2xl font-bold">{sensor[0].sensor_name}</h3>
-                                <LineChart width={600} height={300} data={sensor} >
+                                <LineChart width={600} height={300} data={sensor} margin={{bottom: 50}}>
                                     <YAxis type='number' domain={[0,120]} allowDataOverflow={true}  stroke='#ffffff'/>
                                     <Line type="monotone" dataKey="sound" stroke="#dd23ea" />
                                     <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
-                                    <XAxis dataKey="time_string" stroke='#ffffff' />
+                                    <XAxis interval={10} angle={90} textAnchor="start" tick={{ fontSize: 10 }} dataKey="time_string" stroke='#ffffff' />
                                     <Tooltip />
-                                    <Legend  />
+                                    <Legend verticalAlign="top" align="right" />
                                 </LineChart>
                             </div>
                         )
