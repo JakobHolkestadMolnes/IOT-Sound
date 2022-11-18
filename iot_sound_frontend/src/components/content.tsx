@@ -59,8 +59,8 @@ const content =   () => {
                     /* create a chart for all the data based on sensor name */
                     data.map((sensor:Root, index) => {
                         return (
-                            <div className="text-white grid bg-g10 p-4 m-2 rounded-xl " key={sensor[0].sensor_name}>
-                                <h3 className="text-2xl font-bold">{sensor[0].sensor_name}</h3>
+                            <div className="text-black grid bg-g10 p-4 m-2 rounded-xl " key={sensor[0].sensor_name}>
+                                <h3 className="text-2xl text-white font-bold">{sensor[0].sensor_name}</h3>
                                 <AreaChart width={600} height={300} data={sensor} margin={{bottom: 50}}>
                                 <defs>
           <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
