@@ -21,7 +21,7 @@ function App() {
         <Routes>
 
           <Route path="/" element={<Home/>} />
-          <Route path="/socials" element={<Content />} />
+          <Route path="/data" element={<Content />} />
 
         </Routes>
         </div>

@@ -13,7 +13,7 @@ const sidebar = () => {
             <div className="flex flex-col pl-8 text-2xl  text-white ">
 
                 <Link draggable="false" className="buttonGradiant mt-1 p-2 pr-0 hover:translate-x-1 bg-gray-600  hover:text-red-400 nodrag" to="/"><AiOutlineHome /> Sensors</Link>
-                <Link draggable="false" className="buttonGradiant mt-1 p-2 pr-0 hover:translate-x-1 bg-gray-600  hover:text-red-400 nodrag" to="/socials"><IoAnalytics /> Data</Link>
+                <Link draggable="false" className="buttonGradiant mt-1 p-2 pr-0 hover:translate-x-1 bg-gray-600  hover:text-red-400 nodrag" to="/data"><IoAnalytics /> Data</Link>
                 </div>
 
             <div className="absolute bottom-0 left-0">
