@@ -1,5 +1,7 @@
 pub mod loudness_data {
 
+    use std::error::Error;
+
     use serde::{Deserialize, Serialize};
 
     /// Struct for loudness data
@@ -37,14 +39,14 @@ pub mod loudness_data {
         /// # Arguments
         ///
         /// * `csv` - The csv string to parse
-        pub fn parse_csv(csv: &str) -> Self {
+        pub fn parse_csv(csv: &str) -> Result<Self, Box<dyn Error>> {
             let mut iter = csv.split(',');
-            let db_level = iter.next().unwrap().parse::<f32>().unwrap();
-            let timestamp = iter.next().unwrap().parse::<u64>().unwrap();
-            LoudnessData::new(
+            let db_level = iter.next().unwrap().parse::<f32>()?;
+            let timestamp = iter.next().unwrap().parse::<u64>()?;
+            Ok(LoudnessData::new(
                 db_level,
                 std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp),
-            )
+            ))
         }
 
         /// Returns a csv string representation of the LoudnessData.

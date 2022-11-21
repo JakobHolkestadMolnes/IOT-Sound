@@ -149,7 +149,13 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
             }
         };
 
-        let payload = LoudnessData::parse_csv(data);
+        let payload = match LoudnessData::parse_csv(data) {
+            Ok(payload) => payload,
+            Err(e) => {
+                println!("Error parsing payload: {}", e);
+                continue;
+            }
+        };
 
         if !sensors_cache.contains(&sensor_id.to_string()) {
             println!("Sensor {} not found in database", sensor_id);
