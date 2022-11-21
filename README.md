@@ -46,7 +46,15 @@ The visualization frontend is a web application, which means it uses HTTP (again
 It's also important to note that there are multiple underlying protocols on the link and the physical layers, but we don't interact with them directly.
 
 ### Data simulation
+We did not get the microphone that could be used as a sensor, so we had to resort to simulating the data. Simulation can be run on an ESP32 microcontroller that is connected to the internet, additionally it can simply be run on a computer.  
+
+**TODO insight into the simulation here**
 
 ### Data processing
+Sensor node packages measured data with the timestamp of the measurement in a CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time.  
+
+Data in this format is then captured by backend. It is there split by the comma, error checked, and both values are parsed. If everything is okay, the data is sent to the database.
 
 ### Visualization
+
+### Results and potential future work
