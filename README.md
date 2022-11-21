@@ -32,13 +32,18 @@ iot_sound_api: acts as a link between the database and frontend application.
 Due to the division in different components, the frontend is independent off the other components and can run on a separate machine. In addition, all gathered data is saved in a database.
 
 ## Technologies used
-Physical sensor node: ESP32 microcontroller, ~~a microphone~~.
+Physical sensor node: ESP32 microcontroller, ~~a microphone~~.  
 To program everything except for frontend, we used [Rust](https://www.rust-lang.org/) programming language. Frontend uses [React](https://reactjs.org/) with [typescript](https://www.typescriptlang.org/).  
 Why Rust? Rust gives its programmers low level control without giving up features from higher level languages. It can be used to program microcontrollers and is memory safe, which is the main reason for why we chose to learn it.  All components other than sensor node (and frontend) use Rust for the sake of sticking to the same technology over the majority of the project.  
 
 Frontend is written in React because one of our team members has prior experience in it. Additionally, frontend libraries generally have a steep learning curve, and we did not feel the need to invest time in learning a new technology for that. It would be outside the scope of this project.  
 
 ### Network protocols used
+Backend gathers data from sensor via MQTT broker, which uses the MQTT protocol. This protocol is lightweight and rather simple, which makes it a perfect fit for an IoT project. These MQTT packets are transported with TCP, the reliable transport layer protocol.  
+IP protocol is used to address the MQTT broker and the database. PostgreSQL database itself also uses TCP for communication.  
+The visualization frontend is a web application, which means it uses HTTP (again using TCP and IP (localhost) under the hood).  
+
+It's also important to note that there are multiple underlying protocols on the link and the physical layers, but we don't interact with them directly.
 
 ### Data simulation
 
