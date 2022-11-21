@@ -1,6 +1,9 @@
 use iot_sound_backend::loudness_data::LoudnessData;
 use rand::Rng;
 
+const MAX_SENSOR_VALUE: f32 = 100.0;
+const MIN_SENSOR_VALUE: f32 = 0.0;
+
 /// Represents a loudness sensor simulator
 /// Generates random
 pub struct LoudnessSensorSimulator {
@@ -26,6 +29,12 @@ impl LoudnessSensorSimulator {
 
     /// Generates next random loudness value
     fn next_loudness(&mut self) -> f32 {
-        rand::thread_rng().gen_range(0.0..100.0)
+        let change = rand::thread_rng().gen_range(-10.0..=10.0);
+        let mut loudness = self.latest_loudness + change;
+        // if the new loudness is out of bounds, change in the opposite direction
+        if loudness > MAX_SENSOR_VALUE || loudness < MIN_SENSOR_VALUE {
+            loudness = self.latest_loudness - change;
+        }
+        return loudness;
     }
 }
