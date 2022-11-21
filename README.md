@@ -10,17 +10,21 @@ Possible uses are
 ## Design and methods
 Solution consists of two parts:
 - sensor node
-- visualisation node
+- visualization node
 
-Visualisation and sensor node(s) communicate via MQTT broker server set up by our lecturer.
+Visualization and sensor node(s) communicate via MQTT broker server set up by our lecturer.
 
 ##### Sensor Node
-ESP32 microcontroller with a microphone (RS PRO Omni-Directional Microphone Condenser).  
-Measures the noise level at fixed time intervals and sends it to the MQTT server.  
-TODO: what does it do and how and whatnot
+The responsibility of the sensor node is to gather data and send it to the MQTT broker.  
+For this project, the sensor node measures the noise level (in dB) in the environment and sends measured data along with the timestamp of the measurement to the MQTT server.  
+Equipment used:
+- ESP32 microcontroller  
+- ~~a microphone (RS PRO Omnidirectional Microphone Condenser)~~  
+Due to lack of equipment, data from the sensor is simulated. Simulation is either way run on an ESP32.  
 
-##### Visualisation Node
-Application that recieves data from the sensor node(s), processes it and visualises it to the user.
+##### Visualization Node
+The responsibility of the visualization node is retrieving data from the MQTT broker, processing it and visualizing it in a meaningful way to the end-user.  
+Our solution for that side of the solution is a bit more elaborate. It consists of multiple smaller programs that have to be run simultaneously. These programs are: *iot_sound_backend*, *iot_sound_api* and *iot_sound_frontend*. In addition, a running [PostgreSQL](https://www.postgresql.org/) database is required. 
 
 ## Technologies used
 ESP32 microcontroller, microphones  
