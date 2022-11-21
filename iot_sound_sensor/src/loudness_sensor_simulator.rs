@@ -1,13 +1,18 @@
 use iot_sound_backend::loudness_data::LoudnessData;
+use std::time::SystemTime;
 use rand::Rng;
 
-const MAX_SENSOR_VALUE: f32 = 100.0;
-const MIN_SENSOR_VALUE: f32 = 0.0;
+const DAY_MAX_SENSOR_VALUE: f32 = 100.0;
+const DAY_MIN_SENSOR_VALUE: f32 = 40.0;
+const NIGHT_MAX_SENSOR_VALUE: f32 = 50.0;
+const NIGHT_MIN_SENSOR_VALUE: f32 = 0.0;
 
 /// Represents a loudness sensor simulator
 /// Generates random
 pub struct LoudnessSensorSimulator {
     latest_loudness: f32,
+    state: u8,
+    last_state_change: SystemTime
 }
 
 impl LoudnessSensorSimulator {
@@ -15,6 +20,8 @@ impl LoudnessSensorSimulator {
     pub fn new() -> Self {
         LoudnessSensorSimulator {
             latest_loudness: 30.0,
+            state: 0,
+            last_state_change: SystemTime::now()
         }
     }
 
@@ -23,18 +30,61 @@ impl LoudnessSensorSimulator {
     pub fn get_loudness_data(&mut self) -> LoudnessData {
         self.latest_loudness = self.next_loudness();
 
-        let timestamp = std::time::SystemTime::now();
+        let timestamp = SystemTime::now();
         LoudnessData::new(self.latest_loudness, timestamp)
     }
 
     /// Generates next random loudness value
     fn next_loudness(&mut self) -> f32 {
-        let change = rand::thread_rng().gen_range(-10.0..=10.0);
+        let time_since_state_change = self.last_state_change
+            .elapsed()
+            .unwrap()
+            .as_secs();
+        if time_since_state_change >= 60 {
+            if self.state == 0 {
+                self.state = 1;
+                self.latest_loudness = clampf32(self.latest_loudness, DAY_MIN_SENSOR_VALUE, DAY_MAX_SENSOR_VALUE)
+            } else if self.state == 1 {
+                self.state = 0;
+                self.latest_loudness = clampf32(self.latest_loudness, NIGHT_MIN_SENSOR_VALUE, NIGHT_MAX_SENSOR_VALUE)
+            }
+        }
+        if self.state == 0 {
+            return self.night_loudness();
+        } else if self.state == 1 {
+            return self.day_loudness();
+        } else {
+            return self.day_loudness();
+        }
+    }
+
+    fn night_loudness(&mut self) -> f32 {
+        let change = rand::thread_rng().gen_range(-5.0..=5.0);
         let mut loudness = self.latest_loudness + change;
         // if the new loudness is out of bounds, change in the opposite direction
-        if loudness > MAX_SENSOR_VALUE || loudness < MIN_SENSOR_VALUE {
+        if loudness > NIGHT_MAX_SENSOR_VALUE || loudness < NIGHT_MIN_SENSOR_VALUE {
             loudness = self.latest_loudness - change;
         }
         return loudness;
     }
+
+    fn day_loudness(&mut self) -> f32 {
+        let change = rand::thread_rng().gen_range(-10.0..=10.0);
+        let mut loudness = self.latest_loudness + change;
+        // if the new loudness is out of bounds, change in the opposite direction
+        if loudness > DAY_MAX_SENSOR_VALUE || loudness < DAY_MIN_SENSOR_VALUE {
+            loudness = self.latest_loudness - change;
+        }
+        return loudness;
+    }
+}
+
+fn clampf32(variable: f32, lower: f32, upper: f32) -> f32 {
+    if variable < lower {
+        return lower;
+    }
+    else if variable > upper {
+        return upper;
+    }
+    return variable;
 }
