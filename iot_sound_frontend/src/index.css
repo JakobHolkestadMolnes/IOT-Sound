@@ -18,6 +18,8 @@
     --g8: #DB7093;
     --g9: #00FFFF;
     --g7: #4682B4;
+
+    --g10: #313e4c;
   }
 
     .bg-g1 {
@@ -46,6 +48,10 @@
     }
     .bg-g9 {
         background-color: var(--g9);
+    }
+
+    .bg-g10 {
+        background-color: var(--g10);
     }
 
 /* tailwind tag */

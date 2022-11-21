@@ -1,6 +1,6 @@
 import { Github, Linkedin } from '@icons-pack/react-simple-icons';
 import { useState, useEffect } from 'react';
-import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Legend, Area, AreaChart, Tooltip, XAxis, YAxis } from 'recharts';
 
 import axios from 'axios';
 
@@ -59,16 +59,22 @@ const content =   () => {
                     /* create a chart for all the data based on sensor name */
                     data.map((sensor:Root, index) => {
                         return (
-                            <div className="text-black grid bg-g5 p-4 m-2 rounded-xl " key={sensor[0].sensor_name}>
-                                <h3 className="text-2xl font-bold">{sensor[0].sensor_name}</h3>
-                                <LineChart width={600} height={300} data={sensor} margin={{bottom: 50}}>
+                            <div className="text-black grid bg-g10 p-4 m-2 rounded-xl " key={sensor[0].sensor_name}>
+                                <h3 className="text-2xl text-white font-bold">{sensor[0].sensor_name}</h3>
+                                <AreaChart width={600} height={300} data={sensor} margin={{bottom: 50}}>
+                                <defs>
+          <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#EC407A" stopOpacity={0.4} />
+            <stop offset="75%" stopColor="#EC407A" stopOpacity={0.05} />
+          </linearGradient>
+        </defs>
                                     <YAxis type='number' domain={[0,120]} allowDataOverflow={true}  stroke='#ffffff'/>
-                                    <Line type="monotone" dataKey="sound" stroke="#dd23ea" />
-                                    <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
+                                    <Area type="monotone" dataKey="sound" stroke="#EC407A" fill="url(#color)"/>
+                                    <CartesianGrid stroke="#eee" strokeDasharray="5 5" opacity={0.2}/>
                                     <XAxis interval={10} angle={90} textAnchor="start" tick={{ fontSize: 10 }} dataKey="time_string" stroke='#ffffff' />
                                     <Tooltip />
                                     <Legend verticalAlign="top" align="right" />
-                                </LineChart>
+                                </AreaChart>
                             </div>
                         )
                     })
