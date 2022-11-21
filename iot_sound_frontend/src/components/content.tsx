@@ -29,6 +29,7 @@ const content =   () => {
 }
 
     const [data, setData] = useState([]);
+    const [err, setErr] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:8081/sound/sorted')
@@ -37,6 +38,7 @@ const content =   () => {
             })
             .catch(err => {
                 console.log(err);
+                setErr(true);
             })
     }, []);
 
@@ -47,15 +49,13 @@ const content =   () => {
     }
 
 
-
+if (data.length > 0) {
     return (
         <div className="content">
             <div className=" grid  place-items-center ">
+
+
 {
-
-    
-
-                
                     /* create a chart for all the data based on sensor name */
                     data.map((sensor:Root, index) => {
                         return (
@@ -70,18 +70,40 @@ const content =   () => {
         </defs>
                                     <YAxis type='number' domain={[0,120]} allowDataOverflow={true}  stroke='#ffffff'/>
                                     <Area type="monotone" dataKey="sound" stroke="#EC407A" fill="url(#color)"/>
-                                    <CartesianGrid stroke="#eee" strokeDasharray="5 5" opacity={0.2}/>
-                                    <XAxis interval={10} angle={90} textAnchor="start" tick={{ fontSize: 10 }} dataKey="time_string" stroke='#ffffff' />
+                                    <CartesianGrid stroke="#eee" strokeDasharray="5 5" opacity={0.2} vertical={false} />
+                                    <XAxis interval={10} angle={90} textAnchor="start"  dataKey="time_string" stroke='#ffffff' hide={true}/>
                                     <Tooltip />
                                     <Legend verticalAlign="top" align="right" />
                                 </AreaChart>
                             </div>
                         )
                     })
-                    }
+                }
             </div>
         </div>
+
+    )
+} else if (err) {
+    return (
+        <div className="content">
+                    <div className=" grid  place-items-center ">
+                        <h3 className="text-2xl text-white font-bold">error</h3>
+                        <h3 className="text-2xl text-white font-bold">Check the console, the api might be borked (not running maybe?)</h3>
+                    </div>
+                </div>
+    )
+} else {
+    return (
+        
+            
+                <div className="content">
+                    <div className=" grid  place-items-center ">
+                        <h3 className="text-2xl text-white font-bold">Loading...</h3>
+                    </div>
+                </div>
+          
     )
 }
 
+}
 export default  content;

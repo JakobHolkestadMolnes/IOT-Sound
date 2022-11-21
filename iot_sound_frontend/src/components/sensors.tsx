@@ -13,6 +13,7 @@ const sensors =   () => {
     }
 
     const [sensors, setSensors] = useState([]);
+    const [err, setErr] = useState(false);
     
     useEffect(() => {
         axios.get('http://localhost:8081/sensors')
@@ -21,14 +22,13 @@ const sensors =   () => {
             })
             .catch(err => {
                 console.log(err);
+                setErr(true);
             })
     }, []);
 
     
 
-
-
-
+if (sensors.length > 0) {
     return (
         <div className="content">
             <div className="text-black flex ">
@@ -36,11 +36,14 @@ const sensors =   () => {
                 sensors.map((sensor:Sensor) => {
                     return (
                         <div className="text-black grid bg-g7 p-4 m-2 rounded-xl ">
+                            <div className='esp32bg'>
 
-                            <h3 className="text-2xl font-bold">{sensor.id}</h3>
-
-                            <p className="text-xl font-bold">Location: {sensor.location}</p>
-                            <p className="text-xl font-bold">Type: {sensor.type_}</p>
+                            <h3 className="text-2xl p-2 mb-40 font-bold"><span className='bg-g9 p-2 rounded-xl'>{sensor.id}</span></h3>
+                            </div>
+                            <div>
+                            <p className="text-xl py-4 font-bold">Location: {sensor.location}</p>
+                            <p className="text-xl py-4 font-bold">Type: {sensor.type_}</p>
+                        </div>
                         </div>
                     )
                 })
@@ -49,6 +52,11 @@ const sensors =   () => {
         </div>
 
     )
+            } else if (err) {
+                return <div className="text-white grid bg-g10 p-4 m-2 rounded-xl ">Error <br></br>Check the console, the api might be borked (not running maybe?)</div>
+            } else {
+                return <div className="text-white grid bg-g10 p-4 m-2 rounded-xl ">Loading...</div>
+            }
 }
 
 export default sensors;
