@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, Local};
 use deadpool_postgres::{self, CreatePoolError};
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
@@ -70,7 +70,8 @@ impl Data {
     pub fn get_date_time_string(&self) -> DataWithDateTimeString {
         let time_string = self.time;
         let datetime = DateTime::<Utc>::from(time_string);
-        let datetime_string = datetime.to_rfc2822();
+        let local_time: DateTime<Local> = DateTime::from(datetime);
+        let datetime_string = local_time.to_rfc2822();
         DataWithDateTimeString {
             id: self.id,
             sensor_name: self.sensor_name.clone(),
