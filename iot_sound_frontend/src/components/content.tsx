@@ -32,6 +32,7 @@ const content =   () => {
     const [err, setErr] = useState(false);
 
     useEffect(() => {
+
         axios.get('http://localhost:8081/sound/sorted')
             .then(res => {
                 setData(res.data);
@@ -39,7 +40,18 @@ const content =   () => {
             .catch(err => {
                 console.log(err);
                 setErr(true);
+            }) 
+
+        const interval = setInterval(() => {
+        axios.get('http://localhost:8081/sound/sorted')
+            .then(res => {
+                setData(res.data);
             })
+            .catch(err => {
+                console.log(err);
+                setErr(true);
+            }) }, 5000); // refresh every 5 seconds
+            return () => clearInterval(interval);
     }, []);
 
     const secs_since_epoch_To_Date_string = (secs_since_epoch: number) => {
