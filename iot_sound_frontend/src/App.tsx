@@ -18,7 +18,7 @@ function App() {
 
 
 
-        <div className='p-6 container'>
+        <div className='p-6 container ml-60'>
         <Routes>
 
           <Route path="/" element={<Home/>} />
