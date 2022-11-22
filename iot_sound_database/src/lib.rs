@@ -203,8 +203,7 @@ impl Pool {
     ///
     /// # Returns
     /// `Result<Vec<Data>, tokio_postgres::Error>` - The result of the query
-    pub async fn get_loudness_limited(&self, sensor_name: &str, n: impl Into<i32>) -> Result<Vec<Data>, deadpool_postgres::PoolError> {
-        let n = n.into();
+    pub async fn get_loudness_limited(&self, sensor_name: &str, n: i32) -> Result<Vec<Data>, deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
         let statement = client.prepare("
         SELECT * FROM loudness WHERE sensor_id = $1 ORDER BY time DESC LIMIT $2
