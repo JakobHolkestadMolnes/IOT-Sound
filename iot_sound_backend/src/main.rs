@@ -2,7 +2,8 @@ use bytes::Bytes;
 use iot_sound_backend::loudness_data::LoudnessData;
 use iot_sound_database::{self, Pool};
 use rumqttc::{AsyncClient, ClientError, MqttOptions, QoS};
-use std::env::{self, VarError};
+use std::env::{self};
+use std::error::Error;
 use std::time::Duration;
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
@@ -11,36 +12,20 @@ const MQTT_TOPIC: &str = "ntnu/+/+/loudness/group06/+";
 
 #[tokio::main]
 async fn main() {
-    let (mqtt_address, mqtt_port, db_host, db_port, db_user, db_password, db_name) =
-        match get_env_variables() {
-            Ok((address, port, db_host, db_port, db_user, db_password, db_name)) => (
-                address,
-                match port.parse() {
-                    Ok(port) => port,
-                    Err(e) => panic!("Error parsing mqtt_port: {}", e),
-                },
-                db_host,
-                match db_port.parse() {
-                    Ok(port) => port,
-                    Err(e) => panic!("Error parsing db_port: {}", e),
-                },
-                db_user,
-                db_password,
-                db_name,
-            ),
-            Err(e) => panic!("Env variables error: {}", e),
-        };
+    let env_vars = match get_env_variables() {
+        Ok(env_vars) => env_vars,
+        Err(e) => panic!("Error getting env variables: {}", e),
+    };
 
-    let db_pool = iot_sound_database::Pool::new(
-        Some(db_host),
-        Some(db_port),
-        Some(db_user),
-        Some(db_password),
-        Some(db_name),
+    let db_pool = match iot_sound_database::Pool::new(
+        Some(env_vars.db_host),
+        Some(env_vars.db_port),
+        Some(env_vars.db_user),
+        Some(env_vars.db_password),
+        Some(env_vars.db_name),
     )
-    .await;
-
-    let db_pool = match db_pool {
+    .await
+    {
         Ok(pool) => pool,
         Err(e) => panic!("Error creating database pool: {}", e),
     };
@@ -52,10 +37,11 @@ async fn main() {
         panic!("Error creating loudness table: {}", e);
     }
 
-    let (_mqtt_client, eventloop) = match setup_mqtt_client(mqtt_address, mqtt_port).await {
-        Ok((client, eventloop)) => (client, eventloop),
-        Err(e) => panic!("MQTT setup error: {}", e),
-    };
+    let (_mqtt_client, eventloop) =
+        match setup_mqtt_client(env_vars.mqtt_address, env_vars.mqtt_port).await {
+            Ok((client, eventloop)) => (client, eventloop),
+            Err(e) => panic!("MQTT setup error: {}", e),
+        };
 
     let (tx, rx) = channel::<(String, Bytes)>(100);
 
@@ -65,10 +51,19 @@ async fn main() {
     );
 }
 
+struct EnvVars {
+    mqtt_address: String,
+    mqtt_port: u16,
+    db_host: String,
+    db_port: u16,
+    db_user: String,
+    db_password: String,
+    db_name: String,
+}
+
 /// Get the environment variables
 /// MQTT_ADDRESS, MQTT_PORT, DB_CONNECTION_STRING
-fn get_env_variables() -> Result<(String, String, String, String, String, String, String), VarError>
-{
+fn get_env_variables() -> Result<EnvVars, Box<dyn Error>> {
     // check if env are set already
     if env::var("MQTT_ADDRESS").is_err()
         || env::var("MQTT_PORT").is_err()
@@ -82,22 +77,25 @@ fn get_env_variables() -> Result<(String, String, String, String, String, String
         dotenv::dotenv().ok();
     }
     // if any of the env are not set, return early with error
-    let mqtt_adress = env::var("MQTT_ADDRESS")?;
+    let mqtt_address = env::var("MQTT_ADDRESS")?;
     let mqtt_port = env::var("MQTT_PORT")?;
     let db_host = env::var("DB_HOST")?;
     let db_port = env::var("DB_PORT")?;
     let db_user = env::var("DB_USER")?;
     let db_password = env::var("DB_PASSWORD")?;
     let db_name = env::var("DB_NAME")?;
-    Ok((
-        mqtt_adress,
+
+    let mqtt_port = mqtt_port.parse::<u16>()?;
+    let db_port = db_port.parse::<u16>()?;
+    Ok(EnvVars {
+        mqtt_address,
         mqtt_port,
         db_host,
         db_port,
         db_user,
         db_password,
         db_name,
-    ))
+    })
 }
 
 async fn setup_mqtt_client(
