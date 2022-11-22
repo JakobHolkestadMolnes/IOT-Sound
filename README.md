@@ -48,7 +48,7 @@ It's also important to note that there are multiple underlying protocols on the 
 ### Data simulation
 We did not get the microphone that could be used as a sensor, so we had to resort to simulating the data. Simulation can be run on an ESP32 microcontroller that is connected to the internet, additionally it can simply be run on a computer.  
 
-**TODO insight into the simulation here**
+In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
 
 ### Data processing
 Sensor node packages measured data with the timestamp of the measurement in a CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time.  
