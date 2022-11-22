@@ -7,11 +7,17 @@ const DAY_MIN_SENSOR_VALUE: f32 = 40.0;
 const NIGHT_MAX_SENSOR_VALUE: f32 = 50.0;
 const NIGHT_MIN_SENSOR_VALUE: f32 = 0.0;
 
+#[derive(PartialEq)]
+enum DayNight {
+    Day,
+    Night,
+}
+
 /// Represents a loudness sensor simulator
 /// Generates random
 pub struct LoudnessSensorSimulator {
     latest_loudness: f32,
-    state: u8,
+    state: DayNight,
     last_state_change: SystemTime,
 }
 
@@ -20,7 +26,7 @@ impl LoudnessSensorSimulator {
     pub fn new() -> Self {
         LoudnessSensorSimulator {
             latest_loudness: 30.0,
-            state: 0,
+            state: DayNight::Day,
             last_state_change: SystemTime::now(),
         }
     }
@@ -38,26 +44,31 @@ impl LoudnessSensorSimulator {
     fn next_loudness(&mut self) -> f32 {
         let time_since_state_change = self.last_state_change.elapsed().unwrap().as_secs();
         if time_since_state_change >= 60 {
-            if self.state == 0 {
-                self.state = 1;
-                self.latest_loudness = clampf32(
-                    self.latest_loudness,
-                    DAY_MIN_SENSOR_VALUE,
-                    DAY_MAX_SENSOR_VALUE,
-                )
-            } else if self.state == 1 {
-                self.state = 0;
-                self.latest_loudness = clampf32(
-                    self.latest_loudness,
-                    NIGHT_MIN_SENSOR_VALUE,
-                    NIGHT_MAX_SENSOR_VALUE,
-                )
+            match self.state {
+                DayNight::Day => {
+                    self.state = DayNight::Night;
+                    self.latest_loudness = clampf32(
+                        self.latest_loudness,
+                        DAY_MIN_SENSOR_VALUE,
+                        DAY_MAX_SENSOR_VALUE,
+                    );
+                    self.day_loudness()
+                }
+                DayNight::Night => {
+                    self.state = DayNight::Day;
+                    self.latest_loudness = clampf32(
+                        self.latest_loudness,
+                        NIGHT_MIN_SENSOR_VALUE,
+                        NIGHT_MAX_SENSOR_VALUE,
+                    );
+                    self.night_loudness()
+                }
             }
-        }
-        if self.state == 0 {
-            self.night_loudness()
         } else {
-            self.day_loudness()
+            match self.state {
+                DayNight::Day => self.day_loudness(),
+                DayNight::Night => self.night_loudness(),
+            }
         }
     }
 
