@@ -1,6 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use std::env;
+use serde::Deserialize;
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -22,9 +23,14 @@ async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder 
     }
 }
 
+#[derive(Deserialize)]
+struct Info {
+    limit_amount: i64,
+}
+
 async fn get_sound_sorted_by_sensor_limited(
     pool: web::Data<iot_sound_database::Pool>,
-    info: web::Query<i32>
+    info: web::Query<Info>
 ) -> impl Responder {
 
     let sensors = pool.get_sensor_ids().await;
@@ -39,7 +45,7 @@ async fn get_sound_sorted_by_sensor_limited(
     let mut sensors_and_data = Vec::new();
 
     for sensor in sensors {
-        let returned = pool.get_loudness_limited(&sensor, info.0).await;
+        let returned = pool.get_loudness_limited(&sensor, info.limit_amount).await;
         let returned = match returned {
             Ok(data) => data,
             Err(e) => {

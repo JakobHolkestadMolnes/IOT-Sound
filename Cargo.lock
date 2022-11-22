@@ -824,6 +824,7 @@ dependencies = [
  "actix-web",
  "dotenv",
  "iot_sound_database",
+ "serde",
  "tokio-postgres",
 ]
 

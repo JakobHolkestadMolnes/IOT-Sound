@@ -12,4 +12,5 @@ dotenv = "0.15.0"
 actix-cors = "0.6.4"
 
 iot_sound_database = { path = "../iot_sound_database" }
+serde = { version = "1.0.147", features = ["derive"] }
 

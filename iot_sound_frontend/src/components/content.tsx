@@ -33,7 +33,7 @@ const content =   () => {
 
     useEffect(() => {
 
-        axios.get('http://localhost:8081/sound/sorted')
+        axios.get('http://localhost:8081/sound/sorted/limit?limit_amount=50')
             .then(res => {
                 setData(res.data);
             })
@@ -43,7 +43,7 @@ const content =   () => {
             }) 
 
         const interval = setInterval(() => {
-        axios.get('http://localhost:8081/sound/sorted')
+        axios.get('http://localhost:8081/sound/sorted/limit?limit_amount=50')
             .then(res => {
                 setData(res.data);
             })
