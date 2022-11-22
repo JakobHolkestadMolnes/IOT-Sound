@@ -24,7 +24,7 @@ async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder 
 
 async fn get_sound_sorted_by_sensor_limited(
     pool: web::Data<iot_sound_database::Pool>,
-    web::Query(info): web::Query<i32>
+    info: web::Query<i32>
 ) -> impl Responder {
 
     let sensors = pool.get_sensor_ids().await;
@@ -39,7 +39,7 @@ async fn get_sound_sorted_by_sensor_limited(
     let mut sensors_and_data = Vec::new();
 
     for sensor in sensors {
-        let returned = pool.get_loudness_limited(&sensor, info).await;
+        let returned = pool.get_loudness_limited(&sensor, info.0).await;
         let returned = match returned {
             Ok(data) => data,
             Err(e) => {
