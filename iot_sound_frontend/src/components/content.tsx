@@ -81,7 +81,7 @@ if (data.length > 0) {
           </linearGradient>
         </defs>
                                     <YAxis type='number' domain={[0,120]} allowDataOverflow={true}  stroke='#ffffff'/>
-                                    <Area type="monotone" dataKey="sound" stroke="#EC407A" fill="url(#color)"/>
+                                    <Area animationDuration={0} type="monotone" dataKey="sound" stroke="#EC407A" fill="url(#color)"/>
                                     <CartesianGrid stroke="#eee" strokeDasharray="5 5" opacity={0.2} vertical={false} />
                                     <XAxis interval={10} angle={90} textAnchor="start"  dataKey="time_string" stroke='#ffffff' hide={true}/>
                                     <Tooltip />
