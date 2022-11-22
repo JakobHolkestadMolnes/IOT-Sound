@@ -83,7 +83,7 @@ async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error
         {
             Ok(_) => {
                 println!("Message sent to mqtt publisher: {}", &message);
-                tokio::time::sleep(Duration::from_millis(100)).await;
+                tokio::time::sleep(Duration::from_secs(2)).await;
             }
             Err(e) => {
                 println!("Failed to send message to publisher: {}", e);
