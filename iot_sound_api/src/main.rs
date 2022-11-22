@@ -22,6 +22,52 @@ async fn get_sound(pool: web::Data<iot_sound_database::Pool>) -> impl Responder 
     }
 }
 
+async fn get_sound_sorted_by_sensor_limited(
+    pool: web::Data<iot_sound_database::Pool>,
+    web::Query(info): web::Query<i32>
+) -> impl Responder {
+
+    let sensors = pool.get_sensor_ids().await;
+    let sensors = match sensors {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Error: {}", e);
+            return HttpResponse::InternalServerError().body("Internal Server Error");
+        }
+    };
+
+    let mut sensors_and_data = Vec::new();
+
+    for sensor in sensors {
+        let returned = pool.get_loudness_limited(&sensor, info).await;
+        let returned = match returned {
+            Ok(data) => data,
+            Err(e) => {
+                println!("Error: {}", e);
+                return HttpResponse::InternalServerError().body("Internal Server Error");
+            }
+        };
+        sensors_and_data.push((sensor, returned));
+    }
+
+    
+    let mut date_time_sensor: Vec<Vec<iot_sound_database::DataWithDateTimeString>> = Vec::new();
+    // add dateTimes to each value
+    for sensor in sensors_and_data {
+        let mut sensor_data = Vec::new();
+        for data in sensor.1 {
+            sensor_data.push(data.get_date_time_string());
+        }
+        date_time_sensor.push(sensor_data);
+    }
+
+    if date_time_sensor.is_empty() {
+        HttpResponse::NotFound().body("No data found")
+    } else {
+        HttpResponse::Ok().json(date_time_sensor)
+    }
+}
+
 async fn get_sound_sorted_by_sensor(pool: web::Data<iot_sound_database::Pool>) -> impl Responder {
     let sensors = pool.get_sensor_ids().await;
     let sensors = match sensors {
@@ -117,6 +163,7 @@ async fn main() -> std::io::Result<()> {
             .route("/sound", web::get().to(get_sound))
             .route("/sensors", web::get().to(get_sensors))
             .route("/sound/sorted", web::get().to(get_sound_sorted_by_sensor))
+            .route("/sound/sorted/limit", web::get().to(get_sound_sorted_by_sensor_limited))
             .wrap(Cors::permissive())
     })
     .bind("localhost:8081")?
