@@ -98,7 +98,8 @@ async fn get_sound_sorted_by_sensor(pool: web::Data<iot_sound_database::Pool>) -
         let mut sensor_data = Vec::new();
         for row in &data {
             if row.get_sensor_name() == sensor {
-                sensor_data.push(row.clone());
+                let row = row.clone();
+                sensor_data.push(row);
             }
         }
         data_by_sensor.push(sensor_data);

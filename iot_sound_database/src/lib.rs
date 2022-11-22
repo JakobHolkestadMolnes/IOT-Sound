@@ -26,7 +26,7 @@ impl Sensor {
 }
 
 /// Struct for data from the database that can be converted to json
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Data {
     id: i32,
     sensor_name: String,
