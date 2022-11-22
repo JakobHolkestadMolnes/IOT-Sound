@@ -6,7 +6,7 @@ import { BsClockHistory } from "react-icons/bs";
 const sidebar = () => {
 
     return (
-        <div className="h-screen w-48  bg-gray-700 container">
+        <div className="min-h-screen h-screen w-48  bg-gray-700 container fixed">
             
             <div>
                 <h1 className="text-white text-4xl p-6">IoT Sound</h1>

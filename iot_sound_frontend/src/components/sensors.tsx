@@ -30,7 +30,7 @@ const sensors =   () => {
 
 if (sensors.length > 0) {
     return (
-        <div className="content">
+        <div className="content min-h-full h-screen overflow-y-hidden">
             <div className="text-black flex ">
             {/* return divs containing sensor names*/
                 sensors.map((sensor:Sensor,index) => {
