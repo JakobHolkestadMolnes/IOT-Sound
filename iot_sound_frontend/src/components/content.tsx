@@ -32,17 +32,15 @@ const content =   () => {
     const [err, setErr] = useState(false);
 
     useEffect(() => {
-
-        axios.get('http://localhost:8081/sound/sorted/limit?limit_amount=50')
-            .then(res => {
-                setData(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-                setErr(true);
-            }) 
-
+        do_axios_get();
+        // refresh every 5 seconds
         const interval = setInterval(() => {
+            do_axios_get();
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const do_axios_get = () => {
         axios.get('http://localhost:8081/sound/sorted/limit?limit_amount=50')
             .then(res => {
                 setData(res.data);
@@ -50,9 +48,8 @@ const content =   () => {
             .catch(err => {
                 console.log(err);
                 setErr(true);
-            }) }, 5000); // refresh every 5 seconds
-            return () => clearInterval(interval);
-    }, []);
+            })
+    }
 
     const secs_since_epoch_To_Date_string = (secs_since_epoch: number) => {
         var d = new Date(0);
