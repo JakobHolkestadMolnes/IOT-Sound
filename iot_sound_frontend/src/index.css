@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 :root {
-    --g1: rgb(98, 0, 234);
+    --g1: rgb(160, 0, 234);
     --g2: rgb(236, 64, 122);
-    --g3: rgb(253, 216, 53);
+    --g3: rgb(236, 64, 122);
 
     --borderColor : rgb(98, 0, 234);
 
