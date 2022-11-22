@@ -3,8 +3,9 @@ import logo from './logo.svg'
 import './App.css'
 import Sidebar from './components/sidebar'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Content from './components/content'
+import Recentdata from './components/recentdata'
 import Home from './components/home'
+import Historicaldata from './components/historicaldata'
 
 
 function App() {
@@ -21,7 +22,8 @@ function App() {
         <Routes>
 
           <Route path="/" element={<Home/>} />
-          <Route path="/data" element={<Content />} />
+          <Route path="/recentdata" element={<Recentdata />} />
+          <Route path="/historicaldata" element={<Historicaldata />} />
 
         </Routes>
         </div>

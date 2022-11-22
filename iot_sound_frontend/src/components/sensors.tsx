@@ -33,9 +33,9 @@ if (sensors.length > 0) {
         <div className="content">
             <div className="text-black flex ">
             {/* return divs containing sensor names*/
-                sensors.map((sensor:Sensor) => {
+                sensors.map((sensor:Sensor,index) => {
                     return (
-                        <div className="text-black grid bg-g7 p-4 m-2 rounded-xl ">
+                        <div key={index} className="text-black grid bg-g7 p-4 m-2 rounded-xl ">
                             <div className='esp32bg'>
 
                             <h3 className="text-2xl p-2 mb-40 font-bold"><span className='bg-g9 p-2 rounded-xl'>{sensor.id}</span></h3>

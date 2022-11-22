@@ -4,7 +4,7 @@ import { CartesianGrid, Legend, Area, AreaChart, Tooltip, XAxis, YAxis } from 'r
 
 import axios from 'axios';
 
-const content =   () => {
+const historicaldata =   () => {
 
     type Sensor = {
         id: String,
@@ -41,7 +41,7 @@ const content =   () => {
     }, []);
 
     const do_axios_get = () => {
-        axios.get('http://localhost:8081/sound/sorted/limit?limit_amount=50')
+        axios.get('http://localhost:8081/sound/sorted')
             .then(res => {
                 setData(res.data);
             })
@@ -60,7 +60,7 @@ const content =   () => {
 
 if (data.length > 0) {
     return (
-        <div className="content">
+        <div className="historicaldata">
             <div className=" grid  place-items-center ">
 
 
@@ -94,7 +94,7 @@ if (data.length > 0) {
     )
 } else if (err) {
     return (
-        <div className="content">
+        <div className="historicaldata">
                     <div className=" grid  place-items-center ">
                         <h3 className="text-2xl text-white font-bold">error</h3>
                         <h3 className="text-2xl text-white font-bold">Check the console, the api might be borked (not running maybe?)</h3>
@@ -105,7 +105,7 @@ if (data.length > 0) {
     return (
         
             
-                <div className="content">
+                <div className="historicaldata">
                     <div className=" grid  place-items-center ">
                         <h3 className="text-2xl text-white font-bold">Loading...</h3>
                     </div>
@@ -115,4 +115,4 @@ if (data.length > 0) {
 }
 
 }
-export default  content;
+export default  historicaldata;
