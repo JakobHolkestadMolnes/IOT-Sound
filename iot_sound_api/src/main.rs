@@ -1,7 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use std::env;
 use serde::Deserialize;
+use std::env;
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -30,9 +30,8 @@ struct Info {
 
 async fn get_sound_sorted_by_sensor_limited(
     pool: web::Data<iot_sound_database::Pool>,
-    info: web::Query<Info>
+    info: web::Query<Info>,
 ) -> impl Responder {
-
     let sensors = pool.get_sensor_ids().await;
     let sensors = match sensors {
         Ok(data) => data,
@@ -56,7 +55,6 @@ async fn get_sound_sorted_by_sensor_limited(
         sensors_and_data.push((sensor, returned));
     }
 
-    
     let mut date_time_sensor: Vec<Vec<iot_sound_database::DataWithDateTimeString>> = Vec::new();
     // add dateTimes to each value
     for sensor in sensors_and_data {
@@ -170,7 +168,10 @@ async fn main() -> std::io::Result<()> {
             .route("/sound", web::get().to(get_sound))
             .route("/sensors", web::get().to(get_sensors))
             .route("/sound/sorted", web::get().to(get_sound_sorted_by_sensor))
-            .route("/sound/sorted/limit", web::get().to(get_sound_sorted_by_sensor_limited))
+            .route(
+                "/sound/sorted/limit",
+                web::get().to(get_sound_sorted_by_sensor_limited),
+            )
             .wrap(Cors::permissive())
     })
     .bind("localhost:8081")?

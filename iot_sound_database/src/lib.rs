@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc, Local};
+use chrono::{DateTime, Local, Utc};
 use deadpool_postgres::{self, CreatePoolError};
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
@@ -203,13 +203,21 @@ impl Pool {
     ///
     /// # Returns
     /// `Result<Vec<Data>, tokio_postgres::Error>` - The result of the query
-    pub async fn get_loudness_limited(&self, sensor_name: &str, n: i64) -> Result<Vec<Data>, deadpool_postgres::PoolError> {
+    pub async fn get_loudness_limited(
+        &self,
+        sensor_name: &str,
+        n: i64,
+    ) -> Result<Vec<Data>, deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
-        let statement = client.prepare("
+        let statement = client
+            .prepare(
+                "
         WITH latest_n AS
         (SELECT * FROM loudness WHERE sensor_id = $1 ORDER BY time DESC LIMIT $2)
         SELECT * FROM latest_n ORDER BY time ASC
-        ").await?;
+        ",
+            )
+            .await?;
         let rows = client.query(&statement, &[&sensor_name, &n]).await?;
         let mut data = Vec::new();
 
