@@ -195,6 +195,33 @@ impl Pool {
         Ok(data)
     }
 
+    /// Return *n* records of given sensor data from the database
+    /// # Arguments
+    /// * `self` - The Pool struct
+    /// * `sensor_name` - The name of the sensor
+    /// * `n` - The number of records to return
+    ///
+    /// # Returns
+    /// `Result<Vec<Data>, tokio_postgres::Error>` - The result of the query
+    pub async fn get_loudness_limited(&self, sensor_name: &str, n: i32) -> Result<Vec<Data>, deadpool_postgres::PoolError> {
+        let client = self.pool.get().await?;
+        let statement = client.prepare("
+        SELECT * FROM loudness WHERE sensor_id = $1 ORDER BY time DESC LIMIT $2
+        ").await?;
+        let rows = client.query(&statement, &[&sensor_name, &n]).await?;
+        let mut data = Vec::new();
+
+        for row in rows {
+            data.push(Data {
+                id: row.get(0),
+                sensor_name: row.get(1),
+                sound: row.get(2),
+                time: row.get(3),
+            });
+        }
+        Ok(data)
+    }
+
     /// Return all sensors from the database
     /// # Arguments
     /// * `self` - The Pool struct
