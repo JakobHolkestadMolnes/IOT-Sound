@@ -26,7 +26,7 @@ impl LoudnessSensorSimulator {
     pub fn new() -> Self {
         LoudnessSensorSimulator {
             latest_loudness: 30.0,
-            state: DayNight::Day,
+            state: DayNight::Night,
             last_state_change: SystemTime::now(),
         }
     }
@@ -49,19 +49,19 @@ impl LoudnessSensorSimulator {
                     self.state = DayNight::Night;
                     self.latest_loudness = clampf32(
                         self.latest_loudness,
-                        DAY_MIN_SENSOR_VALUE,
-                        DAY_MAX_SENSOR_VALUE,
+                        NIGHT_MIN_SENSOR_VALUE,
+                        NIGHT_MAX_SENSOR_VALUE,
                     );
-                    self.day_loudness()
+                    self.night_loudness()
                 }
                 DayNight::Night => {
                     self.state = DayNight::Day;
                     self.latest_loudness = clampf32(
                         self.latest_loudness,
-                        NIGHT_MIN_SENSOR_VALUE,
-                        NIGHT_MAX_SENSOR_VALUE,
+                        DAY_MIN_SENSOR_VALUE,
+                        DAY_MAX_SENSOR_VALUE,
                     );
-                    self.night_loudness()
+                    self.day_loudness()
                 }
             }
         } else {
