@@ -103,11 +103,7 @@ pub struct Log {
 
 impl Log {
     pub fn new(id: i64, message: String, time: std::time::SystemTime) -> Log {
-        Log {
-            id,
-            message,
-            time,
-        }
+        Log { id, message, time }
     }
 }
 
@@ -353,7 +349,6 @@ impl Pool {
         Ok(())
     }
 
-
     pub async fn get_logs(&self) -> Result<Vec<Log>, deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
         let statement = client.prepare("SELECT * FROM log").await?;
@@ -367,7 +362,7 @@ impl Pool {
                 message: row.get(2),
             });
         }
-    
+
         Ok(data)
     }
 
@@ -380,9 +375,7 @@ impl Pool {
         let statement = client
             .prepare("INSERT INTO log (message, time) VALUES ($1, $2)")
             .await?;
-        client
-            .execute(&statement, &[&message, &time])
-            .await?;
+        client.execute(&statement, &[&message, &time]).await?;
         Ok(())
     }
 }
