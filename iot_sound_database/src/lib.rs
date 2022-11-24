@@ -94,6 +94,23 @@ impl From<Data> for serde_json::Value {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct Log {
+    id: i64,
+    message: String,
+    time: std::time::SystemTime,
+}
+
+impl Log {
+    pub fn new(id: i64, message: String, time: std::time::SystemTime) -> Log {
+        Log {
+            id,
+            message,
+            time,
+        }
+    }
+}
+
 impl Pool {
     /// Create a new Pool struct
     /// # Arguments
@@ -320,5 +337,37 @@ impl Pool {
             .execute(&statement, &[&sensor_id, &sensor_type, &sensor_location])
             .await?;
         Ok(())
+    }
+
+    pub async fn create_log_table(&self) -> Result<(), deadpool_postgres::PoolError> {
+        let client = self.pool.get().await?;
+        client
+            .execute(
+                "CREATE TABLE IF NOT EXISTS log (
+                    id SERIAL PRIMARY KEY,
+                    message TEXT NOT NULL,
+                    time timestamp NOT NULL);",
+                &[],
+            )
+            .await?;
+        Ok(())
+    }
+
+
+    pub async fn get_logs(&self) -> Result<Vec<Log>, deadpool_postgres::PoolError> {
+        let client = self.pool.get().await?;
+        let statement = client.prepare("SELECT * FROM log").await?;
+        let rows = client.query(&statement, &[]).await?;
+        let mut data = Vec::new();
+
+        for row in rows {
+            data.push(Log {
+                id: row.get(0),
+                time: row.get(1),
+                message: row.get(2),
+            });
+        }
+    
+        Ok(data)
     }
 }

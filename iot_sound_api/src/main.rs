@@ -188,6 +188,7 @@ async fn main() -> std::io::Result<()> {
                 "/sound/sorted/limit",
                 web::get().to(get_sound_sorted_by_sensor_limited),
             )
+            .route("/logs", web::get().to(get_logs))
             .wrap(Cors::permissive())
     })
     .bind("localhost:8081")?

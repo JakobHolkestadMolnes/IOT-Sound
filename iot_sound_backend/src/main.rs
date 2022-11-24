@@ -36,6 +36,9 @@ async fn main() {
     if let Err(e) = db_pool.create_loudness_table().await {
         panic!("Error creating loudness table: {}", e);
     }
+    if let Err(e) = db_pool.create_log_table().await {
+        panic!("Error creating log table: {}", e);
+    }
 
     let (_mqtt_client, eventloop) =
         match setup_mqtt_client(env_vars.mqtt_address, env_vars.mqtt_port).await {
