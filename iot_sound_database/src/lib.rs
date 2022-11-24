@@ -370,4 +370,19 @@ impl Pool {
     
         Ok(data)
     }
+
+    pub async fn insert_log(
+        &self,
+        message: &str,
+        time: std::time::SystemTime,
+    ) -> Result<(), deadpool_postgres::PoolError> {
+        let client = self.pool.get().await?;
+        let statement = client
+            .prepare("INSERT INTO log (message, time) VALUES ($1, $2)")
+            .await?;
+        client
+            .execute(&statement, &[&message, &time])
+            .await?;
+        Ok(())
+    }
 }
