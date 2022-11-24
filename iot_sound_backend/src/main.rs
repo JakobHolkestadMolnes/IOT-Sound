@@ -4,11 +4,11 @@ use iot_sound_database::{self, Pool};
 use rumqttc::{AsyncClient, ClientError, MqttOptions, QoS};
 use std::env::{self};
 use std::error::Error;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
 const MQTT_ID_BACKEND: &str = "g6backend";
-const MQTT_TOPIC: &str = "ntnu/+/+/loudness/group06/+";
+const MQTT_TOPIC: &str = "ntnu/+/+/+/group06/+";
 
 #[tokio::main]
 async fn main() {
@@ -49,8 +49,8 @@ async fn main() {
     let (tx, rx) = channel::<(String, Bytes)>(100);
 
     tokio::join!(
-        listen_for_messages(eventloop, tx),
-        insert_into_database(db_pool, rx)
+        listen_for_messages(eventloop, db_pool.clone(), tx),
+        insert_into_database(db_pool.clone(), rx)
     );
 }
 
@@ -113,20 +113,37 @@ async fn setup_mqtt_client(
     Ok((mqtt_client, eventloop))
 }
 
-async fn listen_for_messages(mut eventloop: rumqttc::EventLoop, channel: Sender<(String, Bytes)>) {
+async fn listen_for_messages(
+    mut eventloop: rumqttc::EventLoop,
+    db_pool: Pool,
+    channel: Sender<(String, Bytes)>,
+) {
     loop {
         match eventloop.poll().await {
             Ok(rumqttc::Event::Incoming(incoming)) => {
                 if let rumqttc::Incoming::Publish(publish) = incoming {
-                    channel
-                        .send((publish.topic, publish.payload))
-                        .await
-                        .unwrap();
+                    if let Err(e) = channel.send((publish.topic, publish.payload)).await {
+                        println!("Error sending message to channel: {}", e);
+                        db_pool
+                            .insert_log(
+                                &format!("Error sending recieved message to db writer: {:?}", e),
+                                SystemTime::now(),
+                            )
+                            .await
+                            .expect("Database error when inserting log");
+                    };
                 }
             }
             Ok(_) => {}
             Err(e) => {
-                println!("Error: {:?}", e);
+                println!("MQTT Connection error: {:?}", &e);
+                db_pool
+                    .insert_log(
+                        &format!("Mqtt Connection error: {:?}", e),
+                        SystemTime::now(),
+                    )
+                    .await
+                    .expect("Database error when inserting log");
             }
         }
     }
@@ -140,12 +157,19 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
 
     while let Some(data) = channel.recv().await {
         let topic_split: Vec<&str> = data.0.split('/').collect();
-        let sensor_id = topic_split.last().unwrap();
+        let sensor_id = topic_split.last().expect("Subscribed topic is valid");
 
         let data: &str = match std::str::from_utf8(&data.1) {
             Ok(data) => data,
             Err(e) => {
                 println!("Error converting bytes to string: {}", e);
+                db_pool
+                    .insert_log(
+                        &format!("Error converting bytes to string: {:?}", e),
+                        SystemTime::now(),
+                    )
+                    .await
+                    .expect("Database error when inserting log");
                 continue;
             }
         };
@@ -154,17 +178,41 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
             Ok(payload) => payload,
             Err(e) => {
                 println!("Error parsing payload: {}", e);
+                db_pool
+                    .insert_log(
+                        &format!("Error parsing payload: {:?}", e),
+                        SystemTime::now(),
+                    )
+                    .await
+                    .expect("Database error when inserting log");
                 continue;
             }
         };
 
         if !sensors_cache.contains(&sensor_id.to_string()) {
             println!("Sensor {} not found in database", sensor_id);
-            add_new_sensor(&db_pool, &topic_split).await;
+            db_pool
+                .insert_log(
+                    &format!("Sensor {} not found in database", sensor_id),
+                    SystemTime::now(),
+                )
+                .await
+                .expect("Database error when inserting log");
+            if let Err(e) = add_new_sensor(&db_pool, &topic_split).await {
+                println!("Error adding new sensor: {}", e);
+                db_pool
+                    .insert_log(
+                        &format!("Error adding new sensor: {:?}", e),
+                        SystemTime::now(),
+                    )
+                    .await
+                    .expect("Database error when inserting log");
+                continue;
+            };
             sensors_cache = db_pool
                 .get_sensor_ids()
                 .await
-                .expect("Sensor ids should be in db");
+                .expect("Database error when getting sensor ids");
         }
 
         println!("Sensorid: {} Message: {}", sensor_id, payload.db_level());
@@ -175,17 +223,22 @@ async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Byte
                 payload.timestamp(),
             )
             .await
-            .expect("Inserting loudness into db should work");
+            .expect("Database error when inserting loudness data");
     }
 }
 
-async fn add_new_sensor(db_pool: &Pool, topic_split: &[&str]) {
+async fn add_new_sensor(db_pool: &Pool, topic_split: &[&str]) -> Result<(), Box<dyn Error>> {
     let sensor_id = topic_split.last().unwrap();
     let sensor_type = topic_split[3];
     let sensor_location = format!("{}/{}/{}", topic_split[0], topic_split[1], topic_split[2]);
 
-    db_pool
-        .insert_new_sensor(sensor_id, sensor_type, &sensor_location)
-        .await
-        .expect("Inserting new sensor into db should work");
+    if sensor_type == "loudness" {
+        db_pool
+            .insert_new_sensor(sensor_id, sensor_type, &sensor_location)
+            .await
+            .expect("Database error when inserting new sensor");
+        Ok(())
+    } else {
+        Err((format!("Sensor type {} not supported", sensor_type)).into())
+    }
 }
