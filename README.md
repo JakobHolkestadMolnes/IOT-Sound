@@ -6,10 +6,28 @@ Picture this: You're at your university, it is lunchtime, and you're facing a di
 We have created a system that can help you make this decision. Introducing IOT-Sound, a system that can tell you how busy your school cafeteria is, or any other environment for that matter. (multiple environments can be tracked at the same time)  
 It is based on an ESP32 microcontroller (or a Raspberry Pi) that gathers data from a microphone and sends it via our system to the frontend web application. There the measured data is displayed in a graph and the user can see how noisy, thus busy the environment is.
 As of now, sensor node is only simulated due to lack of necessary equipment, but simulation itself can also run on a microcontroller. We went through many iterations of the system, and we have learned a lot about making such systems as robust as possible.  
-Possible future work includes sending mobile notifications to the user when the environment is getting **too busy** – according to the user's preferences.
+Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences.
 
-## Introduction
+## Introduction TODO!!!
+Here you introduce your project in more detail. Include the following:
+-   Introduction of the context, the domain. Where will your solution work? Is this the maritime domain, finance, private homes?
+-   Introduction of the problem. What is problematic in this environment? What will you solve? Why is this relevant?
+-   Short introduction in the rest of the report, preferably with links to the other chapters. For example, "We propose an Internet-of-Things system using temperature and humidity sensors. First we describe the used protocols, ["theory and technology"]. Then we describe our work process in ["Methodology"]. Then the obtained [results] are presented, followed by [reflection and discussion of possible improvements]." Note: don't copy this text, write your own!
 
+## Theory and technology
+
+## Methodology
+
+## Results
+
+## Discussion
+
+## Conclusion and future work
+
+## References
+
+
+# BELLOW IS OLD STUFF TO BE MOVED UP
 ## Overview
 IOT Sound sensor that is used to measure how loud the environment is.  
 
