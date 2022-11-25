@@ -349,9 +349,14 @@ impl Pool {
         Ok(())
     }
 
+    /// Return all log entries from the database, ordered by time DESC
+    /// # Returns
+    /// `Result<Vec<Log>, tokio_postgres::Error>` - The result of the query
     pub async fn get_logs(&self) -> Result<Vec<Log>, deadpool_postgres::PoolError> {
         let client = self.pool.get().await?;
-        let statement = client.prepare("SELECT * FROM log").await?;
+        let statement = client
+            .prepare("SELECT * FROM log ORDER BY time DESC")
+            .await?;
         let rows = client.query(&statement, &[]).await?;
         let mut data = Vec::new();
 
@@ -366,6 +371,35 @@ impl Pool {
         Ok(data)
     }
 
+    /// Return n most recent log entries from the database, ordered by time DESC
+    /// # Arguments
+    /// * `n` - The number of log entries to return
+    /// # Returns
+    /// `Result<Vec<Log>, tokio_postgres::Error>` - The result of the query
+    pub async fn get_logs_limited(&self, n: i64) -> Result<Vec<Log>, deadpool_postgres::PoolError> {
+        let client = self.pool.get().await?;
+        let statement = client
+            .prepare("SELECT * FROM log ORDER BY time DESC LIMIT $1")
+            .await?;
+        let rows = client.query(&statement, &[&n]).await?;
+        let mut data = Vec::new();
+
+        for row in rows {
+            data.push(Log {
+                id: row.get(0),
+                message: row.get(1),
+                time: row.get(2),
+            });
+        }
+        Ok(data)
+    }
+
+    /// Insert log entry into the database
+    /// # Arguments
+    /// * `message` - The message to log
+    /// * `time` - The time the log was created
+    /// # Returns
+    /// `Result<(), tokio_postgres::Error>` - The result of the query
     pub async fn insert_log(
         &self,
         message: &str,

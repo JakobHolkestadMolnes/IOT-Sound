@@ -152,6 +152,25 @@ async fn get_logs(pool: web::Data<iot_sound_database::Pool>) -> impl Responder {
     }
 }
 
+async fn get_logs_limited(
+    pool: web::Data<iot_sound_database::Pool>,
+    info: web::Query<Info>,
+) -> impl Responder {
+    let returned = pool.get_logs_limited(info.limit_amount).await;
+    let returned = match returned {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Error: {}", e);
+            return HttpResponse::InternalServerError().body("Internal Server Error");
+        }
+    };
+    if returned.is_empty() {
+        HttpResponse::NotFound().body("No data found")
+    } else {
+        HttpResponse::Ok().json(returned)
+    }
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     if env::var("DB_USER").is_err()
@@ -189,6 +208,7 @@ async fn main() -> std::io::Result<()> {
                 web::get().to(get_sound_sorted_by_sensor_limited),
             )
             .route("/logs", web::get().to(get_logs))
+            .route("/logs/limit", web::get().to(get_logs_limited))
             .wrap(Cors::permissive())
     })
     .bind("localhost:8081")?
