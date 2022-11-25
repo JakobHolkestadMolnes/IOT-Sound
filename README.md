@@ -39,8 +39,14 @@ In this section we will describe the protocols we used and how are they used in 
 A lightweight subscribe/publish messaging application layer protocol.  
 In our case, the sensor publishes data to the broker, and iot_sound_backend subscribes to the broker and processes the data. Data is sent in CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time. Data is validated by backend before being saved in the database. Sensor ID is grabbed from the topic the data was published to.
 #### HTTP
+Hypertext Transfer Protocol, also an application layer protocol.
+MORE HERE
+Frontend and API
+How it all works lol
 #### TCP
+
 #### IP
+
 #### Ethernet or wireless????? TODO
 
 
