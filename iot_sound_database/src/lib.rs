@@ -96,13 +96,13 @@ impl From<Data> for serde_json::Value {
 
 #[derive(Serialize, Deserialize)]
 pub struct Log {
-    id: i64,
+    id: i32,
     message: String,
     time: std::time::SystemTime,
 }
 
 impl Log {
-    pub fn new(id: i64, message: String, time: std::time::SystemTime) -> Log {
+    pub fn new(id: i32, message: String, time: std::time::SystemTime) -> Log {
         Log { id, message, time }
     }
 }
@@ -358,8 +358,8 @@ impl Pool {
         for row in rows {
             data.push(Log {
                 id: row.get(0),
-                time: row.get(1),
-                message: row.get(2),
+                message: row.get(1),
+                time: row.get(2),
             });
         }
 
