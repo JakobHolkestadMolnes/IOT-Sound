@@ -6,8 +6,9 @@ use std::env::{self};
 use std::error::Error;
 use std::time::{Duration, SystemTime};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
+use uuid::Uuid;
 
-const MQTT_ID_BACKEND: &str = "g6backendddd";
+
 const MQTT_TOPIC: &str = "ntnu/+/+/+/group06/+";
 
 #[tokio::main]
@@ -105,7 +106,8 @@ async fn setup_mqtt_client(
     mqtt_adress: String,
     mqtt_port: u16,
 ) -> Result<(AsyncClient, rumqttc::EventLoop), ClientError> {
-    let mut mqtt_options = MqttOptions::new(MQTT_ID_BACKEND, mqtt_adress, mqtt_port);
+
+    let mut mqtt_options = MqttOptions::new(Uuid::new_v4().to_string().as_str(), mqtt_adress, mqtt_port);
     mqtt_options.set_keep_alive(Duration::from_secs(5));
     let (mqtt_client, eventloop) = AsyncClient::new(mqtt_options, 10);
 

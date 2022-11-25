@@ -14,3 +14,11 @@ bytes = "1"
 iot_sound_database = { path = "../iot_sound_database" }
 
 serde = { version = "1.0.147", features = ["derive"] }
+
+[dependencies.uuid]
+version = "1.2.2"
+features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]
