@@ -11,7 +11,7 @@ import Historicaldata from './components/historicaldata'
 function App() {
 
   return (
-    <div className="App bg-gray-800 flex Gradiant">
+    <div className="App bg-gray-800 flex Gradiant h-screen">
       <BrowserRouter>
 
         <Sidebar />
