@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Recentdata from './components/recentdata'
 import Home from './components/home'
 import Historicaldata from './components/historicaldata'
+import Logs from './components/logs'
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/" element={<Home/>} />
           <Route path="/recentdata" element={<Recentdata />} />
           <Route path="/historicaldata" element={<Historicaldata />} />
+          <Route path="/logs" element={<Logs />} />
 
         </Routes>
         </div>

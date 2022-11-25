@@ -1,4 +1,58 @@
 # IOT-Sound
+This repository is a part of a school project for IDATA2304 – Computer communication and network programming course at NTNU.  
+
+## Abstract
+Picture this: You're at your university, it is lunchtime, and you're facing a dilemma; go to the school cafeteria or go to the nearby supermarket to get food? What is the most optimal choice. This is highly dependent on how busy the cafeteria is, it may be very busy, and you may not be able to get food in time before your next lecture!  
+We have created a system that can help you make this decision. Introducing IOT-Sound, a system that can tell you how busy your school cafeteria is, or any other environment for that matter. (multiple environments can be tracked at the same time)  
+It is based on an ESP32 microcontroller (or a Raspberry Pi) that gathers data from a microphone and sends it via our system to the frontend web application. There the measured data is displayed in a graph and the user can see how noisy, thus busy the environment is.
+As of now, sensor node is only simulated due to lack of necessary equipment, but simulation itself can also run on a microcontroller. We went through many iterations of the system, and we have learned a lot about making such systems as robust as possible.  
+Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences.
+
+## Introduction TODO!!!
+Here you introduce your project in more detail. Include the following:
+-   Introduction of the context, the domain. Where will your solution work? Is this the maritime domain, finance, private homes?
+-   Introduction of the problem. What is problematic in this environment? What will you solve? Why is this relevant?
+-   Short introduction in the rest of the report, preferably with links to the other chapters. For example, "We propose an Internet-of-Things system using temperature and humidity sensors. First we describe the used protocols, ["theory and technology"]. Then we describe our work process in ["Methodology"]. Then the obtained [results] are presented, followed by [reflection and discussion of possible improvements]." Note: don't copy this text, write your own!
+
+## Theory and technology
+### Sensor node
+In general, our solution consists of two parts: sensor node and visualization node. Sensor node is simpler so we will start with that one.  
+Sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer. (More on MQTT in used protocols section)
+The initial idea was to use a ESP32 microcontroller with a physical microphone. Soon we learned that getting necessary hardware may be a problem, so we had to resort to simulating the data. Simulation can nevertheless run on a microcontroller.  
+#### Simulation
+In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
+
+### Visualization node
+The responsibility of the visualization node is retrieving data from the MQTT broker, processing it and visualizing it in a meaningful way to the end-user.  
+Our solution for that side of the project is a bit more elaborate. It consists of multiple smaller programs that have to be run simultaneously. These programs are:  
+- iot_sound_backend: Retrieves data from the MQTT broker, processes it and saves in the database.  
+- iot_sound_frontend: web application that visualizes data from the database.
+- iot_sound_api: acts as a link between the database and frontend application.  
+- In addition, a running [PostgreSQL](https://www.postgresql.org/) database is required for api and backend to function.  
+
+Due to the division in different components, the frontend is independent off the other components and can run on a separate machine. In addition, all gathered data is saved in a database.  
+
+
+### Used protocols
+#### MQTT
+#### HTTP
+#### TCP
+#### IP
+#### Ethernet or wireless????? TODO
+
+
+## Methodology
+
+## Results
+
+## Discussion
+
+## Conclusion and future work
+
+## References
+
+
+# BELLOW IS OLD STUFF TO BE MOVED UP
 ## Overview
 IOT Sound sensor that is used to measure how loud the environment is.  
 

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { AiOutlineHome } from "react-icons/ai";
 import { IoAnalytics } from "react-icons/io5";
 import { BsClockHistory } from "react-icons/bs";
+import { SlNotebook } from "react-icons/sl";
 
 const sidebar = () => {
 
@@ -16,6 +17,7 @@ const sidebar = () => {
                 <Link draggable="false" className="buttonGradiant mt-1 p-2 pr-0 hover:translate-x-1 bg-gray-600  hover:text-red-400 nodrag" to="/"><AiOutlineHome /> Sensors</Link>
                 <Link draggable="false" className="buttonGradiant mt-1 p-2 pr-0 hover:translate-x-1 bg-gray-600  hover:text-red-400 nodrag" to="/recentdata"><IoAnalytics /> Recent data</Link>
                 <Link draggable="false" className="buttonGradiant mt-1 p-2 pr-0 hover:translate-x-1 bg-gray-600  hover:text-red-400 nodrag" to="/historicaldata"><BsClockHistory /> Historical data</Link>
+                <Link draggable="false" className="buttonGradiant mt-1 p-2 pr-0 hover:translate-x-1 bg-gray-600  hover:text-red-400 nodrag" to="/logs"><SlNotebook /> Logs</Link>
 
                 </div>
 
