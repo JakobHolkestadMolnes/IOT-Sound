@@ -16,8 +16,8 @@ Here you introduce your project in more detail. Include the following:
 
 ## Theory and technology
 ### Sensor node
-In general, our solution consists of two parts: sensor node and visualization node. Sensor node is simpler so we will start with that one.  
-Sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer. (More on MQTT in used protocols section)
+In general, our solution consists of two parts: sensor node and visualization node. Sensor node is simpler, so we will start with that one.  
+The sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer. (More on [MQTT](#MQTT) under used protocols section)
 The initial idea was to use a ESP32 microcontroller with a physical microphone. Soon we learned that getting necessary hardware may be a problem, so we had to resort to simulating the data. Simulation can nevertheless run on a microcontroller.  
 #### Simulation
 In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
@@ -28,13 +28,16 @@ Our solution for that side of the project is a bit more elaborate. It consists o
 - iot_sound_backend: Retrieves data from the MQTT broker, processes it and saves in the database.  
 - iot_sound_frontend: web application that visualizes data from the database.
 - iot_sound_api: acts as a link between the database and frontend application.  
-- In addition, a running [PostgreSQL](https://www.postgresql.org/) database is required for api and backend to function.  
+- In addition, a running [PostgreSQL](https://www.postgresql.org/) database is required for API and backend to function.  
 
 Due to the division in different components, the frontend is independent off the other components and can run on a separate machine. In addition, all gathered data is saved in a database.  
 
 
 ### Used protocols
+In this section we will describe the protocols we used and how are they used in our solution.
 #### MQTT
+A lightweight subscribe/publish messaging application layer protocol.  
+In our case, the sensor publishes data to the broker, and iot_sound_backend subscribes to the broker and processes the data. Data is sent in CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time. Data is validated by backend before being saved in the database. Sensor ID is grabbed from the topic the data was published to.
 #### HTTP
 #### TCP
 #### IP
