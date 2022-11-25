@@ -1,4 +1,15 @@
 # IOT-Sound
+This repository is a part of a school project for IDATA2304 – Computer communication and network programming course at NTNU.  
+
+## Abstract
+Picture this: You're at your university, it is lunchtime, and you're facing a dilemma; go to the school cafeteria or go to the nearby supermarket to get food? What is the most optimal choice. This is highly dependent on how busy the cafeteria is, it may be very busy, and you may not be able to get food in time before your next lecture!  
+We have created a system that can help you make this decision. Introducing IOT-Sound, a system that can tell you how busy your school cafeteria is, or any other environment for that matter. (multiple environments can be tracked at the same time)  
+It is based on an ESP32 microcontroller (or a Raspberry Pi) that gathers data from a microphone and sends it via our system to the frontend web application. There the measured data is displayed in a graph and the user can see how noisy, thus busy the environment is.
+As of now, sensor node is only simulated due to lack of necessary equipment, but simulation itself can also run on a microcontroller. We went through many iterations of the system, and we have learned a lot about making such systems as robust as possible.  
+Possible future work includes sending mobile notifications to the user when the environment is getting **too busy** – according to the user's preferences.
+
+## Introduction
+
 ## Overview
 IOT Sound sensor that is used to measure how loud the environment is.  
 
