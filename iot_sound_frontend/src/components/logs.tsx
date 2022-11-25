@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { useState, useEffect, useMemo } from 'react';
 
+function formatDate(seconds) {
+    const regex = /\([^\)]*\)/;
+    let milliseconds = seconds * 1000;
+    let dateString = Date(milliseconds).toString();
+    return dateString.replace(regex, "").trim();
+}
+
 const logs = () => {
 
     type Log = {
@@ -38,7 +45,7 @@ const logs = () => {
                                 <tr key="{index}">
                                     <td>{log.id}</td>
                                     <td>{log.message}</td>
-                                    <td>{log.time.secs_since_epoch}</td>
+                                    <td>{formatDate(log.time.secs_since_epoch)}</td>
                                 </tr>
                             )
                         })
