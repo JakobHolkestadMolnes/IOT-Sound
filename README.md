@@ -9,9 +9,9 @@ As of now, sensor node is only simulated due to lack of necessary equipment, but
 Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences.
 
 ## Introduction TODO!!!
-Here you introduce your project in more detail. Include the following:
--   Introduction of the context, the domain. Where will your solution work? Is this the maritime domain, finance, private homes?
--   Introduction of the problem. What is problematic in this environment? What will you solve? Why is this relevant?
+
+We propose a solution to a problem that exists at universities today. Currently, students cannot know whether or not a room is in use. Is there a lecture there? Is the cafeteria full? This can cause students to waste time, perhaps by visiting a room to check if it is empty to use for group work when there is in fact a lecture occurring. Our project will allow them to check the loudness of the room before wasting time and energy traveling there.
+
 -   Short introduction in the rest of the report, preferably with links to the other chapters. For example, "We propose an Internet-of-Things system using temperature and humidity sensors. First we describe the used protocols, ["theory and technology"]. Then we describe our work process in ["Methodology"]. Then the obtained [results] are presented, followed by [reflection and discussion of possible improvements]." Note: don't copy this text, write your own!
 
 ## Theory and technology
