@@ -30,7 +30,7 @@ Our solution for that side of the project is a bit more elaborate. It consists o
 - iot_sound_api: acts as a link between the database and frontend application.  
 - In addition, a running [PostgreSQL](https://www.postgresql.org/) database is required for API and backend to function.  
 
-Due to the division in different components, the frontend is independent off the other components and can run on a separate machine. In addition, all gathered data is saved in a database.  
+Due to the division in different components, the frontend is independent of the other components and can run on a separate machine. In addition, all gathered data is saved in a database.  
 
 
 ### Used protocols
