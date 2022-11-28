@@ -62,6 +62,11 @@ It is a **transport layer**  protocol that works under the hood.
 This project uses the TCP protocol as it is important for this project because the nature of tcp is that it is lossless, which means that the validity of the data is ensured since they are not just pushed like a stream like UDP. 
 
 #### IP
+[IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer communications protocol.
+
+It is the basis of the internet. it uses an addressing system ( example: 192.168.1.1) and performs routing between source and the next router which is one hop closer to the intended destination host on another network.
+
+In this project we use the Addressing system to connect the different parts of the project, e.g. the sensor and the mqtt broker. It is also the base of all the other protocols used in this project.
 
 #### Ethernet or wireless????? TODO
 
@@ -97,6 +102,7 @@ talk about lack of security?
 
 ## References
 TCP. (11. juni 2020). Wikipedia. Retrieved 28. November 2022 kl. 11:45 from https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710. 
+Wikipedia contributors. (2022, November 28). IPv4. In _Wikipedia, The Free Encyclopedia_. Retrieved 10:24, November 28, 2022, from [https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621)
 
 
 # BELLOW IS OLD STUFF TO BE MOVED UP
