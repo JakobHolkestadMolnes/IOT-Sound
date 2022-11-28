@@ -69,7 +69,11 @@ It is the basis of the internet. it uses an addressing system ( example: 192.168
 In this project we use the Addressing system to connect the different parts of the project, e.g. the sensor and the mqtt broker. It is also the base of all the other protocols used in this project.
 
 #### Ethernet or wireless????? TODO
+This project uses a mix of wired and wireless.  
+It isn't restricted to a specific version of the wireless or wired protocols.  
 
+The sensor is mostly meant to be working wirelessly and be connected to the MQTT broker that way. The backend and API is ideally using a wired connection running on a server connected to the network for best possible connection and throughput speed.  
+The frontend can either be hosted locally or served along with the API from a server but it is very flexible in how the end computer can connect.
 
 ## Methodology
 
