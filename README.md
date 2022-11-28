@@ -74,7 +74,7 @@ This project uses a mix of wired and wireless.
 It isn't restricted to a specific version of the wireless or wired protocols.  
 
 The sensor is mostly meant to be working wirelessly and be connected to the MQTT broker that way. The backend and API is ideally using a wired connection running on a server connected to the network for best possible connection and throughput speed.  
-The frontend can either be hosted locally or served along with the API from a server but it is very flexible in how the end computer can connect.
+The frontend can either be hosted locally or served along with the API from a server, but it is very flexible in how the end computer can connect.
 
 ## Methodology
 
@@ -101,9 +101,16 @@ Recent data page:
 ![frontendscreenshot](imgs/frontendscreenshot.png)  
 
 ## Discussion
-talk about lack of security?  
-logs  
-no sensor - simulation  
+
+### Security
+First, let's discuss security, or the lack there of. In *IoT Sound* the measured loudness and a timestamp are sent over the Internet in **plaintext**. This may pose a security, or privacy threat. Since the system is meant to be used in public spaces only, we don't see a reason to encrypt the data. On the other hand, if someone installed our system in their private home, it could definitely be used maliciously. Therefore, it is **not** advised to install *IoT Sound* in any setting other than a publically available space.  
+
+### Robustness
+The components are robust in the sense that they are designed such that they should not crash easily. For instance, if the internet connection of the sensor or backend is lost, they should not crash, instead they should keep trying to reconnect. Individuals components may however crash on startup, but that's due to lacking configuration (e.g. missing environment variables or database not running).
+
+### No physical sensor
+Originally we wanted to capture loudness data with a physical sensor. This was not possible due to lack of equipment. This was 
+limiting and reason for why we had to resort to data simulation. 
 
 ## Conclusion and future work
 
