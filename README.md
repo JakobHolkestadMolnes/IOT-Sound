@@ -82,7 +82,7 @@ The frontend web application is divided into four pages:
 - Historical data – all loudness represented in a graph form
 - Logs – information about any issues that might have occurred in the backend
 
-We opted for minimalistic design to show only details that are needed, and dark theme to reduce eye burn.  
+We opted for minimalistic design to show only details that are needed, and dark theme to reduce eye fatigue.  
 
 Recent data page:  
 ![frontendscreenshot](imgs/frontendscreenshot.png)  
