@@ -34,6 +34,11 @@ Our solution for that side of the project is a bit more elaborate. It consists o
 
 Due to the division in different components, the frontend is independent of the other components and can run on a separate machine. In addition, all gathered data is saved in a database.  
 
+### Programming
+To program everything except for frontend, we used [Rust](https://www.rust-lang.org/) programming language. Frontend uses [React](https://reactjs.org/) with [typescript](https://www.typescriptlang.org/).  
+We decided to use Rust as our programming language because it is a common choice for microcontrollers. Rust gives its programmers low level control without giving up features from higher level languages. It can be used to program microcontrollers and is memory safe, which is the main reason for why we chose to learn it. Apart from the sensor node, all components could have used other languages. We used Rust for the sake of sticking to the same technology for the majority of the project.  
+
+Frontend is written in React because one of our team members has prior experience in it. Additionally, frontend libraries generally have a steep learning curve, and we did not feel the need to invest time in learning a new technology for that. It would be outside the scope of this project.  
 
 ### Used protocols
 In this section we will describe the protocols we used and how are they used in our solution.
@@ -59,6 +64,11 @@ It is a **transport layer**  protocol that works under the hood.
 This project uses the TCP protocol as it is important for this project because the nature of tcp is that it is lossless, which means that the validity of the data is ensured since they are not just pushed like a stream like UDP. 
 
 #### IP
+[IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer communications protocol.
+
+It is the basis of the internet. it uses an addressing system ( example: 192.168.1.1) and performs routing between source and the next router which is one hop closer to the intended destination host on another network.
+
+In this project we use the Addressing system to connect the different parts of the project, e.g. the sensor and the mqtt broker. It is also the base of all the other protocols used in this project.
 
 #### Ethernet or wireless????? TODO
 
@@ -66,8 +76,6 @@ This project uses the TCP protocol as it is important for this project because t
 ## Methodology
 
 Our group always met physically at campus in order to work together. We tried to meet at least two times a week, our course schedule permitting. When it came to the programming itself, we worked fast and tried to focus on adding new features rather than never breaking anything. This way we could see what was useful and what wasn't, and could instead go back and fix bugs or refactor.
-
-We decided to use Rust as our programming language because it is a common choice for microcontrollers. The more we used it the more we realized it was a perfect choice. We especially liked the memory safety and its borrow system.
 
 ## Results
 ### Structure
@@ -84,7 +92,7 @@ The frontend web application is divided into four pages:
 - Historical data – all loudness represented in a graph form
 - Logs – information about any issues that might have occurred in the backend
 
-We opted for minimalistic design to show only details that are needed, and dark theme to reduce eye burn.  
+We opted for minimalistic design to show only details that are needed, and dark theme to reduce eye fatigue.  
 
 Recent data page:  
 ![frontendscreenshot](imgs/frontendscreenshot.png)  
@@ -96,6 +104,7 @@ talk about lack of security?
 
 ## References
 TCP. (11. juni 2020). Wikipedia. Retrieved 28. November 2022 kl. 11:45 from https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710. 
+Wikipedia contributors. (2022, November 28). IPv4. In _Wikipedia, The Free Encyclopedia_. Retrieved 10:24, November 28, 2022, from [https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621)
 
 
 # BELLOW IS OLD STUFF TO BE MOVED UP
@@ -133,10 +142,6 @@ Due to the division in different components, the frontend is independent off the
 
 ## Technologies used
 Physical sensor node: ESP32 microcontroller, ~~a microphone~~.  
-To program everything except for frontend, we used [Rust](https://www.rust-lang.org/) programming language. Frontend uses [React](https://reactjs.org/) with [typescript](https://www.typescriptlang.org/).  
-Why Rust? Rust gives its programmers low level control without giving up features from higher level languages. It can be used to program microcontrollers and is memory safe, which is the main reason for why we chose to learn it.  All components other than sensor node (and frontend) use Rust for the sake of sticking to the same technology over the majority of the project.  
-
-Frontend is written in React because one of our team members has prior experience in it. Additionally, frontend libraries generally have a steep learning curve, and we did not feel the need to invest time in learning a new technology for that. It would be outside the scope of this project.  
 
 ### Network protocols used
 Backend gathers data from sensor via MQTT broker, which uses the MQTT protocol. This protocol is lightweight and rather simple, which makes it a perfect fit for an IoT project. These MQTT packets are transported with TCP, the reliable transport layer protocol.  
