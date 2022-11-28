@@ -114,8 +114,14 @@ limiting and reason for why we had to resort to data simulation.
 
 ## Conclusion and future work
 
+Overall, the project was a success with us creating a usable product. It is unfortunate that we were not able to test it with actual data from a sensor, owing to our never receiving a microphone from the lecturer.
+
 future work:
 earlier mentioned: "Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences."
+
+Multiple sensors could be used in one room in an attempt to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year. The sensor data could be encrypted in order to protect the privacy of the location.
+
+For the rest of the project, the logs could be filtered in order to not display the same error message hundreds of times.
 
 ## References
 - Wikipedia contributors. (2022, November 28). *Transmission Control Protocol*. In Wikipedia, The Free Encyclopedia. Retrieved 11:10, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=Transmission_Control_Protocol&oldid=1124312705  
