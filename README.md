@@ -63,6 +63,10 @@ This project uses the TCP protocol as it is important for this project because t
 
 ## Methodology
 
+Our group always met physically at campus in order to work together. We tried to meet at least two times a week, our course schedule permitting. When it came to the programming itself, we worked fast and tried to focus on adding new features rather than never breaking anything. This way we could see what was useful and what wasn't, and could instead go back and fix bugs or refactor.
+
+We decided to use Rust as our programming language because it is a common choice for microcontrollers. The more we used it the more we realized it was a perfect choice. We especially liked the memory safety and its borrow system.
+
 ## Results
 ### How data flows?
 Below is a simple data flow diagram for our system, with description underneath. We will go into more detail shortly.  
