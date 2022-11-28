@@ -61,9 +61,16 @@ http://example.com/logs
 ## Methodology
 
 ## Results
+### How data flows?
 Below is a simple data flow diagram for our system, with description underneath. We will go into more detail shortly.  
 ![dataflow](imgs/dataflow.png)  
-Data is first generated in the sensor node, from there it is sent to the MQTT Broker set up by our lecturer. Backend subscribes to a specific topic on the MQTT Broker and thus receives the measurement forwarded by the broker. Then backend processes received data and saves it in a database. The frontend web application sends requests to the REST API, in turn it sends a request to the database. The database then sends requested data to the API, and it forwards it back to the frontend, where it is visualized.
+Data is first generated in the sensor node, from there it is sent to the MQTT Broker set up by our lecturer. Backend subscribes to a specific topic on the MQTT Broker and thus receives the measurement forwarded by the broker. Then backend processes received data and saves it in a database. The frontend web application sends requests to the REST API, in turn it sends a request to the database. The database then sends requested data to the API, and it forwards it back to the frontend, where it is visualized.  
+### Structure
+Our system consists of smaller components that communicate with each other and are mostly independent of each other. As mentioned and explained din more detail above ([Visualization node](#Visualization-node) under [Theory and technology](#Theory-and-technology)), visualization part consists of 3 components (+database). The sensor is more self-contained, easy to deploy on a microcontroller or a Raspberry Pi.
+
+### User interface
+![frontendscreenshot](imgs/frontendscreenshot.png)  
+
 
 ## Discussion
 
