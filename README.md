@@ -43,7 +43,7 @@ Hypertext Transfer Protocol, also an application layer protocol.
 
 HTTP in this project is used between the frontend and the API server to communicate.
 This happens using REST (Representational State Transfer) which is an architectural style for providing standards between different computer systems.
-That means the API has different endpoints to hit for the data it wants, and it doesnt need to get all the data at once. That allows us to have a seperation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
+That means the API has different endpoints to hit for the data it wants, and it doesn't need to get all the data at once. That allows us to have a separation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
 Some example of the endpoints are:  
 http://example.com/sound  
 http://example.com/sound/sorted  
@@ -51,7 +51,10 @@ http://example.com/sound/sorted/limit?limit_amount=10
 http://example.com/sensors  
 http://example.com/logs  
 
-#### TCP
+#### TCP  
+[TCP](https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710) or **Transmission Control Protocol** is a network protocol for connection oriented, reliable and error checked transmission of data.   
+It is a **transport layer**  protocol that works under the hood.
+This project uses the TCP protocol as it is important for this project because the nature of tcp is that it is lossless, which means that the validity of the data is ensured since they are not just pushed like a stream like UDP. 
 
 #### IP
 
@@ -70,6 +73,7 @@ Data is first generated in the sensor node, from there it is sent to the MQTT Br
 ## Conclusion and future work
 
 ## References
+TCP. (11. juni 2020). Wikipedia. Retrieved 28. November 2022 kl. 11:45 from https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710. 
 
 
 # BELLOW IS OLD STUFF TO BE MOVED UP
