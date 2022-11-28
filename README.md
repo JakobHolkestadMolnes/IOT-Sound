@@ -17,7 +17,7 @@ We propose a solution to a problem that exists at universities today. Currently,
 ## Theory and technology
 ### Sensor node
 In general, our solution consists of two parts: sensor node and visualization node. Sensor node is simpler, so we will start with that one.  
-The sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer. (More on [MQTT](#MQTT) under used protocols section)
+The sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer (more on MQTT under [Used protocols](Used-protocols) section).
 The initial idea was to use a ESP32 microcontroller with a physical microphone. Soon we learned that getting necessary hardware may be a problem, so we had to resort to simulating the data. Simulation can nevertheless run on a microcontroller.  
 #### Simulation
 In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
@@ -61,6 +61,9 @@ http://example.com/logs
 ## Methodology
 
 ## Results
+Below is a simple data flow diagram for our system, with description underneath. We will go into more detail shortly.  
+![dataflow](imgs/dataflow.png)  
+Data is first generated in the sensor node, from there it is sent to the MQTT Broker set up by our lecturer. Backend subscribes to a specific topic on the MQTT Broker and thus receives the measurement forwarded by the broker. Then backend processes received data and saves it in a database. The frontend web application sends requests to the REST API, in turn it sends a request to the database. The database then sends requested data to the API, and it forwards it back to the frontend, where it is visualized.
 
 ## Discussion
 
