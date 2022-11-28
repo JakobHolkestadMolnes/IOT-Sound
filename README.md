@@ -44,12 +44,12 @@ Hypertext Transfer Protocol, also an application layer protocol.
 HTTP in this project is used between the frontend and the API server to communicate.
 This happens using REST (Representational State Transfer) which is an architectural style for providing standards between different computer systems.
 That means the API has different endpoints to hit for the data it wants, and it doesnt need to get all the data at once. That allows us to have a seperation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
-Some example of the endpoints are:
-http://example.com/sound
-http://example.com/sound/sorted
-http://example.com/sound/sorted/limit?limit_amount=10
-http://example.com/sensors
-http://example.com/logs
+Some example of the endpoints are:  
+http://example.com/sound  
+http://example.com/sound/sorted  
+http://example.com/sound/sorted/limit?limit_amount=10  
+http://example.com/sensors  
+http://example.com/logs  
 
 #### TCP
 
