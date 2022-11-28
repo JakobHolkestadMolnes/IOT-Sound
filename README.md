@@ -17,7 +17,7 @@ We propose a solution to a problem that exists at universities today. Currently,
 ## Theory and technology
 ### Sensor node
 In general, our solution consists of two parts: sensor node and visualization node. Sensor node is simpler, so we will start with that one.  
-The sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer (more on MQTT under [Used protocols](Used-protocols) section).
+The sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer (more on MQTT under [Used protocols](#Used-protocols) section).
 The initial idea was to use a ESP32 microcontroller with a physical microphone. Soon we learned that getting necessary hardware may be a problem, so we had to resort to simulating the data. Simulation can nevertheless run on a microcontroller.  
 #### Simulation
 In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
