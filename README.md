@@ -77,8 +77,7 @@ The sensor is mostly meant to be working wirelessly and be connected to the MQTT
 The frontend can either be hosted locally or served along with the API from a server, but it is very flexible in how the end computer can connect.
 
 ## Methodology
-
-Our group always met physically at campus in order to work together. We tried to meet at least two times a week, our course schedule permitting. When it came to the programming itself, we worked fast and tried to focus on adding new features rather than never breaking anything. This way we could see what was useful and what wasn't, and could instead go back and fix bugs or refactor.
+Our group always met physically at campus in order to work together. We tried to meet at least two times a week, our course schedule permitting. When it came to the programming itself, we worked fast and tried to focus on adding new features rather than never breaking anything. This way we could see what was useful and what wasn't, and could instead go back and fix bugs or refactor. We worked in sprints, but they're documented in a separate file: [sprint-reports.md](sprint-reports.md).  
 
 ## Results
 ### Structure
