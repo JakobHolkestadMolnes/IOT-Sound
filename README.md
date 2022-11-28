@@ -100,6 +100,14 @@ We opted for minimalistic design to show only details that are needed, and dark 
 Recent data page:  
 ![frontendscreenshot](imgs/frontendscreenshot.png)  
 
+### Excellent features
+We went beyond the minimum requirements for the project and provide the following:
+- graphical user interface as a web application
+- REST API for frontend – database communication
+- integration of other courses from this semester: IDATA2303 – Data Modeling and Database Applications
+- historical data
+- asynchronous programming
+
 ## Discussion
 
 ### Security
