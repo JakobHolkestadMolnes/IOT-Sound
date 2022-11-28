@@ -40,9 +40,17 @@ A lightweight subscribe/publish messaging application layer protocol.
 In our case, the sensor publishes data to the broker, and iot_sound_backend subscribes to the broker and processes the data. Data is sent in CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time. Data is validated by backend before being saved in the database. Sensor ID is grabbed from the topic the data was published to.
 #### HTTP
 Hypertext Transfer Protocol, also an application layer protocol.
-MORE HERE
-Frontend and API
-How it all works lol
+
+HTTP in this project is used between the frontend and the API server to communicate.
+This happens using REST (Representational State Transfer) which is an architectural style for providing standards between different computer systems.
+That means the API has different endpoints to hit for the data it wants, and it doesnt need to get all the data at once. That allows us to have a seperation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
+Some example of the endpoints are:
+http://example.com/sound
+http://example.com/sound/sorted
+http://example.com/sound/sorted/limit?limit_amount=10
+http://example.com/sensors
+http://example.com/logs
+
 #### TCP
 
 #### IP
