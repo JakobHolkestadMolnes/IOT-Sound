@@ -107,6 +107,8 @@ no sensor - simulation
 
 ## Conclusion and future work
 
+Overall, the project was a success with us creating a usable product. It is unfortunate that we were not able to test it with actual data from a sensor, owing to our never receiving a microphone from the lecturer.
+
 future work:
 earlier mentioned: "Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences."
 
