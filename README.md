@@ -1,5 +1,6 @@
 # IOT-Sound
 This repository is a part of a school project for IDATA2304 – Computer communication and network programming course at NTNU.  
+The following text is the project report.  
 
 ## Abstract
 Picture this: You're at your university, it is lunchtime, and you're facing a dilemma; go to the school cafeteria or go to the nearby supermarket to get food? What is the most optimal choice. This is highly dependent on how busy the cafeteria is, it may be very busy, and you may not be able to get food in time before your next lecture!  
@@ -8,11 +9,12 @@ It is based on an ESP32 microcontroller (or a Raspberry Pi) that gathers data fr
 As of now, sensor node is only simulated due to lack of necessary equipment, but simulation itself can also run on a microcontroller. We went through many iterations of the system, and we have learned a lot about making such systems as robust as possible.  
 Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences.
 
-## Introduction TODO!!!
+## Introduction
 
-We propose a solution to a problem that exists at universities today. Currently, students cannot know whether or not a room is in use. Is there a lecture there? Is the cafeteria full? This can cause students to waste time, perhaps by visiting a room to check if it is empty to use for group work when there is in fact a lecture occurring. Our project will allow them to check the loudness of the room before wasting time and energy traveling there.
+We propose a solution to a problem that exists at universities today. Currently, students cannot know whether or not a room is in use or if it's very busy. Is there a lecture there? Is the cafeteria full? This can cause students to waste time, perhaps by visiting a room to check if it is empty to use for group work, when there is in fact a lecture occurring. Our IoT system will allow students to check the loudness of the room before wasting time and energy traveling there.  
+Our system is not limited to universities, it can in fact function in any public space that would have a need for it.  
 
--   Short introduction in the rest of the report, preferably with links to the other chapters. For example, "We propose an Internet-of-Things system using temperature and humidity sensors. First we describe the used protocols, ["theory and technology"]. Then we describe our work process in ["Methodology"]. Then the obtained [results] are presented, followed by [reflection and discussion of possible improvements]." Note: don't copy this text, write your own!
+The remainder of this report goes into more detail on some specific topics. Under [Theory and technology](#Theory-and-technology) we describe how the two main parts of the system work: [Sensor node](#Sensor-node) and [Visualization node](#Visualization-node). There are more details about our [programming](#Programming) and [protocols used](#Used-protocols) in the corresponding sectios. Later we describe how we worked, under [Methodology](#Methodology). Under [Results](#Results) you can find details about the [structure](#Structure) of the system, and a description of our [user interface](#User-interface). Near the end there is a [discussion](#Discussion) section where we discuss security, among other things. Lastly there is [conclusion and future work](#Conclusion-and-future-work) section.
 
 ## Theory and technology
 ### Sensor node
@@ -148,11 +150,3 @@ We did not get the microphone that could be used as a sensor, so we had to resor
 
 In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
 
-### Data processing
-Sensor node packages measured data with the timestamp of the measurement in a CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time.  
-
-Data in this format is then captured by backend. It is there split by the comma, error checked, and both values are parsed. If everything is okay, the data is sent to the database.
-
-### Visualization
-
-### Results and potential future work
