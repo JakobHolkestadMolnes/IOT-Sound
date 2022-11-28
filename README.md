@@ -110,6 +110,8 @@ no sensor - simulation
 future work:
 earlier mentioned: "Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences."
 
+Multiple sensors could be used in one room in an attempt to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year.
+
 ## References
 - Wikipedia contributors. (2022, November 28). *Transmission Control Protocol*. In Wikipedia, The Free Encyclopedia. Retrieved 11:10, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=Transmission_Control_Protocol&oldid=1124312705  
 - Wikipedia contributors. (2022, November 28). *IPv4*. In _Wikipedia, The Free Encyclopedia_. Retrieved 10:24, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621  
