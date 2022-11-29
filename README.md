@@ -53,7 +53,7 @@ This happens using REST (Representational State Transfer) which is an architectu
 That means the API has different endpoints to hit for the data it wants, and it doesn't need to get all the data at once. When API is called, it returns a JSON string with the results. (JSON is a standard for communication between web applications.) That allows us to have a separation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
 Example API call:
 ```bash
-curl -X GET "http://localhost:8080/sound/limit?limit_amount=1" -H "accept: application/json"
+$ curl -X GET "http://localhost:8080/sound/limit?limit_amount=1" -H "accept: application/json"
 ```
 Example JSON response:
 ```json
