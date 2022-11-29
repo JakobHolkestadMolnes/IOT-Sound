@@ -14,7 +14,7 @@ Possible future work includes sending mobile notifications to the user when the 
 We propose a solution to a problem that exists at universities today. Currently, students cannot know whether or not a room is in use or if it's very busy. Is there a lecture there? Is the cafeteria full? This can cause students to waste time, perhaps by visiting a room to check if it is empty to use for group work, when there is in fact a lecture occurring. Our IoT system will allow students to check the loudness of the room before wasting time and energy traveling there.  
 Our system is not limited to universities, it can in fact function in any public space that would have a need for it.  
 
-The remainder of this report goes into more detail on some specific topics. Under [Theory and technology](#Theory-and-technology) we describe how the two main parts of the system work: [Sensor node](#Sensor-node) and [Visualization node](#Visualization-node). There are more details about our [programming](#Programming) and [protocols used](#Used-protocols) in the corresponding sectios. Later we describe how we worked, under [Methodology](#Methodology). Under [Results](#Results) you can find details about the [structure](#Structure) of the system, and a description of our [user interface](#User-interface). Near the end there is a [discussion](#Discussion) section where we discuss security, among other things. Lastly there is [conclusion and future work](#Conclusion-and-future-work) section.
+The remainder of this report goes into more detail on some specific topics. Under [Theory and technology](#Theory-and-technology), we describe how the two main parts of the system work: [Sensor node](#Sensor-node) and [Visualization node](#Visualization-node). There are more details about our [programming](#Programming) and [protocols used](#Used-protocols) in the corresponding sections. Later we describe how we worked, under [Methodology](#Methodology). Under [Results](#Results), you can find details about the [structure](#Structure) of the system, and a description of our [user interface](#User-interface). Near the end, there is a [discussion](#Discussion) section where we discuss security, among other things. Lastly, there is [conclusion and future work](#Conclusion-and-future-work) section.
 
 ## Theory and technology
 ### Sensor node
@@ -22,7 +22,7 @@ In general, our solution consists of two parts: sensor node and visualization no
 The sensor node is responsible for gathering data from the environment and sending it to the MQTT broker set up by our lecturer (more on MQTT under [Used protocols](#Used-protocols) section).
 The initial idea was to use a ESP32 microcontroller with a physical microphone. Soon we learned that getting necessary hardware may be a problem, so we had to resort to simulating the data. Simulation can nevertheless run on a microcontroller.  
 #### Simulation
-In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
+In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
 
 ### Visualization node
 The responsibility of the visualization node is retrieving data from the MQTT broker, processing it and visualizing it in a meaningful way to the end-user.  
@@ -52,34 +52,32 @@ HTTP in this project is used between the frontend and the API server to communic
 This happens using REST (Representational State Transfer) which is an architectural style for providing standards between different computer systems.
 That means the API has different endpoints to hit for the data it wants, and it doesn't need to get all the data at once. That allows us to have a separation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
 Some example of the endpoints are:  
-http://example.com/sound  
-http://example.com/sound/sorted  
-http://example.com/sound/sorted/limit?limit_amount=10  
-http://example.com/sensors  
-http://example.com/logs  
+- http://example.com/sound  
+- http://example.com/sound/sorted  
+- http://example.com/sound/sorted/limit?limit_amount=10  
+- http://example.com/sensors  
+- http://example.com/logs  
 
-#### TCP  
+#### TCP
 [TCP](https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710) or **Transmission Control Protocol** is a network protocol for connection oriented, reliable and error checked transmission of data.   
-It is a **transport layer**  protocol that works under the hood.
-This project uses the TCP protocol as it is important for this project because the nature of tcp is that it is lossless, which means that the validity of the data is ensured since they are not just pushed like a stream like UDP. 
+It is a **transport layer** protocol that works under the hood.
+This project uses the TCP protocol as it is important for this project because the nature of TCP is that it is lossless, which means that the validity of the data is ensured since they are not just pushed like a stream like UDP. 
 
 #### IP
 [IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer communications protocol.
+It is the basis of the internet. It uses an addressing system (example: 192.168.1.1) and performs routing between source and the next router which is one hop closer to the intended destination host on another network.
 
-It is the basis of the internet. it uses an addressing system ( example: 192.168.1.1) and performs routing between source and the next router which is one hop closer to the intended destination host on another network.
+In this project we use the addressing system to connect the different parts of the project, e.g. the sensor and the MQTT broker. It is also the base of all the other protocols used in this project.
 
-In this project we use the Addressing system to connect the different parts of the project, e.g. the sensor and the mqtt broker. It is also the base of all the other protocols used in this project.
-
-#### Ethernet or wireless????? TODO
+#### Ethernet or wireless
 This project uses a mix of wired and wireless.  
 It isn't restricted to a specific version of the wireless or wired protocols.  
 
 The sensor is mostly meant to be working wirelessly and be connected to the MQTT broker that way. The backend and API is ideally using a wired connection running on a server connected to the network for best possible connection and throughput speed.  
-The frontend can either be hosted locally or served along with the API from a server but it is very flexible in how the end computer can connect.
+The frontend can either be hosted locally or served along with the API from a server, but it is very flexible in how the end computer can connect.
 
 ## Methodology
-
-Our group always met physically at campus in order to work together. We tried to meet at least two times a week, our course schedule permitting. When it came to the programming itself, we worked fast and tried to focus on adding new features rather than never breaking anything. This way we could see what was useful and what wasn't, and could instead go back and fix bugs or refactor.
+Our group always met physically at campus in order to work together. We tried to meet at least two times a week, our course schedule permitting. When it came to the programming itself, we worked fast and tried to focus on adding new features rather than never breaking anything. This way we could see what was useful and what wasn't, and could instead go back and fix bugs or refactor. We worked in sprints, but they're documented in a separate file: [sprint-reports.md](sprint-reports.md).  
 
 ## Results
 ### Structure
@@ -101,63 +99,38 @@ We opted for minimalistic design to show only details that are needed, and dark 
 Recent data page:  
 ![frontendscreenshot](imgs/frontendscreenshot.png)  
 
+### Excellent features
+We went beyond the minimum requirements for the project and provide the following:
+- graphical user interface as a web application
+- REST API for frontend – database communication
+- integration of other courses from this semester: IDATA2303 – Data Modeling and Database Applications
+- historical data
+- asynchronous programming
+
 ## Discussion
-talk about lack of security?
+
+### Security
+First, let's discuss security, or the lack there of. In *IoT Sound* the measured loudness and a timestamp are sent over the Internet in **plaintext**. This may pose a security, or privacy threat. Since the system is meant to be used in public spaces only, we don't see a reason to encrypt the data. On the other hand, if someone installed our system in their private home, it could definitely be used maliciously. Therefore, it is **not** advised to install *IoT Sound* in any setting other than a publically available space.  
+
+### Robustness
+The components are robust in the sense that they are designed such that they should not crash easily. For instance, if the internet connection of the sensor or backend is lost, they should not crash, instead they should keep trying to reconnect. Individuals components may however crash on startup, but that's due to lacking configuration (e.g. missing environment variables or database not running).
+
+### No physical sensor
+Originally we wanted to capture loudness data with a physical sensor. This was not possible due to lack of equipment. This was 
+limiting and reason for why we had to resort to data simulation. 
 
 ## Conclusion and future work
+
+Overall, the project was a success with us creating a usable product. It is unfortunate that we were not able to test it with actual data from a sensor, owing to our never receiving a microphone from the lecturer.
+
+future work:
+earlier mentioned: "Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences."
+
+Multiple sensors could be used in one room in an attempt to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year. The sensor data could be encrypted in order to protect the privacy of the location.
+
+For the rest of the project, the logs could be filtered in order to not display the same error message hundreds of times.
 
 ## References
 - Wikipedia contributors. (2022, November 28). *Transmission Control Protocol*. In Wikipedia, The Free Encyclopedia. Retrieved 11:10, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=Transmission_Control_Protocol&oldid=1124312705  
 - Wikipedia contributors. (2022, November 28). *IPv4*. In _Wikipedia, The Free Encyclopedia_. Retrieved 10:24, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621  
 - The Rust open source community. (regularly updated) *The Rust Book* Retrieved multiple times October and November 2022, from https://doc.rust-lang.org/book/  
-
-
-
-# BELLOW IS OLD STUFF TO BE MOVED UP
-## Overview
-IOT Sound sensor that is used to measure how loud the environment is.  
-
-Possible uses are
-- measure busyness (how busy it is) of environment
-- determine if the environment is too noisy to work comfortably
-- determine if the environment is loud enough to damage hearing
-
-## Design and methods
-Solution consists of two parts:
-- sensor node  
-- visualization node  
-
-Visualization and sensor node(s) communicate via MQTT broker server set up by our lecturer.
-
-### Sensor Node
-The responsibility of the sensor node is to gather data and send it to the MQTT broker.  
-For this project, the sensor node measures the noise level (in dB) in the environment and sends measured data along with the timestamp of the measurement to the MQTT server.  
-Equipment used:
-- ESP32 microcontroller  
-- ~~a microphone (RS PRO Omnidirectional Microphone Condenser)~~  
-
-Due to lack of equipment, data from the sensor is simulated. Simulation is either way run on an ESP32.  
-
-### Visualization Node
-The responsibility of the visualization node is retrieving data from the MQTT broker, processing it and visualizing it in a meaningful way to the end-user.  
-Our solution for that side of the solution is a bit more elaborate. It consists of multiple smaller programs that have to be run simultaneously. These programs are: *iot_sound_backend*, *iot_sound_api* and *iot_sound_frontend*. In addition, a running [PostgreSQL](https://www.postgresql.org/) database is required for api and backend to function.  
-iot_sound_backend: Retrieves data from the MQTT broker, processes it and saves in the database.  
-iot_sound_frontend: web application that visualizes data from the database.
-iot_sound_api: acts as a link between the database and frontend application.  
-Due to the division in different components, the frontend is independent off the other components and can run on a separate machine. In addition, all gathered data is saved in a database.
-
-## Technologies used
-Physical sensor node: ESP32 microcontroller, ~~a microphone~~.  
-
-### Network protocols used
-Backend gathers data from sensor via MQTT broker, which uses the MQTT protocol. This protocol is lightweight and rather simple, which makes it a perfect fit for an IoT project. These MQTT packets are transported with TCP, the reliable transport layer protocol.  
-IP protocol is used to address the MQTT broker and the database. PostgreSQL database itself also uses TCP for communication.  
-The visualization frontend is a web application, which means it uses HTTP (again using TCP and IP (localhost) under the hood).  
-
-It's also important to note that there are multiple underlying protocols on the link and the physical layers, but we don't interact with them directly.
-
-### Data simulation
-We did not get the microphone that could be used as a sensor, so we had to resort to simulating the data. Simulation can be run on an ESP32 microcontroller that is connected to the internet, additionally it can simply be run on a computer.  
-
-In order to have a range of data that somewhat accurately mimics the real world, the simulation has two states: quiet and noisy (night and day in the code). In the quiet state there is less variation and a lower decibel cap (50 dB), whereas in the noisy state there is a louder range (40 to 100 dB) and a greater variation. This simulates times when the classroom has students who are discussing for example working on group projects, and when the classroom is mostly quiet because there is a lecture.
-
