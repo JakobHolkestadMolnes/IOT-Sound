@@ -47,21 +47,29 @@ A lightweight subscribe/publish messaging application layer protocol.
 In our case, the sensor publishes data to the broker, and iot_sound_backend subscribes to the broker and processes the data. Data is sent in CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time. Data is validated by backend before being saved in the database. Sensor ID is grabbed from the topic the data was published to.
 #### HTTP
 Hypertext Transfer Protocol, also an application layer protocol.
-
-HTTP in this project is used between the frontend and the API server to communicate.
+The frontend application for this project is a web app, which means it runs in a web browser, using HTTP protocol.
+HTTP in this project is also used between the frontend and the API server to communicate.
 This happens using REST (Representational State Transfer) which is an architectural style for providing standards between different computer systems.
-That means the API has different endpoints to hit for the data it wants, and it doesn't need to get all the data at once. That allows us to have a separation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
-Some example of the endpoints are:  
-- http://example.com/sound  
-- http://example.com/sound/sorted  
-- http://example.com/sound/sorted/limit?limit_amount=10  
-- http://example.com/sensors  
-- http://example.com/logs  
+That means the API has different endpoints to hit for the data it wants, and it doesn't need to get all the data at once. When API is called, it returns a JSON string with the results. (JSON is a standard for communication between web applications.) That allows us to have a separation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
+Example API call:
+```bash
+curl -X GET "http://localhost:8080/sound/limit?limit_amount=1" -H "accept: application/json"
+```
+Example JSON response:
+```json
+[
+ {
+  "sensor_id": "sensor1",
+  "db_level": "50",
+  "timestamp": "2020-05-06T12:00:00Z"
+ },
+]
+```
 
 #### TCP
 [TCP](https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710) or **Transmission Control Protocol** is a network protocol for connection oriented, reliable and error checked transmission of data.   
 It is a **transport layer** protocol that works under the hood.
-This project uses the TCP protocol as it is important for this project because the nature of TCP is that it is lossless, which means that the validity of the data is ensured since they are not just pushed like a stream like UDP. 
+Both MQTT and HTTP application layer protocols, that we use, use TCP for packet transport. TCP is also used for database communication. This is because packet loss is not tolerated in these applications.
 
 #### IP
 [IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer communications protocol.
