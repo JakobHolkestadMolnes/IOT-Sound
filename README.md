@@ -133,7 +133,7 @@ Overall, the project was a success with us creating a usable product. It is unfo
 
 Possible future work includes a mobile application with features like: user could subscribe to a given sensor and set maximum loudness preference. They would then receive a mobile notification when the environment is getting too busy according to their liking.
 Another idea is having multiple sensors in one area and using them to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year.
-The logs page could be improved. For example to filter errors in order to not display the same error message hundreds of times, this can currently happen when backend looses conneciton to the MQTT broker.
+The logs page could be improved. For example, to filter errors in order to not display the same error message hundreds of times, this can currently happen when backend looses connection to the MQTT broker.
 Sensor data could be encrypted in order to protect the privacy of the location, and thus our system would be suitable for use in private homes.
 
 ## References
