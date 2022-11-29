@@ -129,12 +129,12 @@ limiting and reason for why we had to resort to data simulation.
 
 ## Conclusion and future work
 
-Overall, the project was a success with us creating a usable product. It is unfortunate that we did not receive the equipment and thus didn't get to test our system with real world data.
+Overall, the project was a success with us creating a usable product. It is unfortunate that we did not receive the equipment and thus didn't get to test our system with real world data.  
 
-Possible future work includes a mobile application with features like: user could subscribe to a given sensor and set maximum loudness preference. They would then receive a mobile notification when the environment is getting too busy according to their liking.
-Another idea is having multiple sensors in one area and using them to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year.
-The logs page could be improved. For example, to filter errors in order to not display the same error message hundreds of times, this can currently happen when backend looses connection to the MQTT broker.
-Sensor data could be encrypted in order to protect the privacy of the location, and thus our system would be suitable for use in private homes.
+Possible future work includes a mobile application with features like: user could subscribe to a given sensor and set maximum loudness preference. They would then receive a mobile notification when the environment is getting too busy according to their liking.  
+Another idea is having multiple sensors in one area and using them to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year.  
+The logs page could be improved. For example, to filter errors in order to not display the same error message hundreds of times, this can currently happen when backend looses connection to the MQTT broker.  
+Sensor data could be encrypted in order to protect the privacy of the location, and thus our system would be suitable for use in private homes.  
 
 ## References
 - Wikipedia contributors. (2022, November 28). *Transmission Control Protocol*. In Wikipedia, The Free Encyclopedia. Retrieved 11:10, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=Transmission_Control_Protocol&oldid=1124312705  
