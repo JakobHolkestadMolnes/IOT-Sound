@@ -101,6 +101,13 @@ fn get_env_variables() -> Result<EnvVars, Box<dyn Error>> {
     })
 }
 
+/// Setup the MQTT client
+/// Returns a Result with the client and eventloop
+/// # Arguments
+/// * `mqtt_address` - The address of the MQTT broker
+/// * `mqtt_port` - The port of the MQTT broker
+/// # Returns
+/// * `Result<(AsyncClient, EventLoop), ClientError>` - The client and eventloop
 async fn setup_mqtt_client(
     mqtt_adress: String,
     mqtt_port: u16,
@@ -114,6 +121,12 @@ async fn setup_mqtt_client(
     Ok((mqtt_client, eventloop))
 }
 
+/// Function that listens for messages from the MQTT broker
+/// 
+/// # Arguments
+/// mut `eventloop` - The eventloop that listens for messages
+/// `db_pool` - The database pool for logging purposes
+/// `channel` - The channel to send the messages to
 async fn listen_for_messages(
     mut eventloop: rumqttc::EventLoop,
     db_pool: Pool,
@@ -156,6 +169,11 @@ async fn listen_for_messages(
     }
 }
 
+/// Function that inserts the messages into the database
+/// 
+/// # Arguments
+/// * `db_pool` - The database pool
+/// * `channel` - The channel to listen for messages on
 async fn insert_into_database(db_pool: Pool, mut channel: Receiver<(String, Bytes)>) {
     let mut sensors_cache = match db_pool.get_sensor_ids().await {
         Ok(sensors) => sensors,

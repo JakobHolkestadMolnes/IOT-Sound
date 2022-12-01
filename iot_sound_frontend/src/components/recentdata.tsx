@@ -22,6 +22,8 @@ const recentdata =   () => {
   time: Time
 }
 
+type type_data = data[]
+
  interface Time {
   secs_since_epoch: number
   nanos_since_epoch: number
@@ -66,7 +68,7 @@ if (data.length > 0) {
 
 {
                     /* create a chart for all the data based on sensor name */
-                    data.map((sensor:Root, index) => {
+                    data.map((sensor:type_data, index) => {
                         return (
                             <div className="text-black grid bg-g10 p-4 m-2 rounded-xl " key={sensor[0].sensor_name}>
                                 <h3 className="text-2xl text-white font-bold">{sensor[0].sensor_name}</h3>

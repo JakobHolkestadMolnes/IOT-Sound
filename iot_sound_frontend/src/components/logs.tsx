@@ -1,19 +1,23 @@
 import axios from 'axios';
 import { useState, useEffect, useMemo } from 'react';
 
-function formatDate(seconds) {
+function formatDate(seconds: number) {
     const regex = /\([^\)]*\)/;
     let milliseconds = seconds * 1000;
-    let dateString = Date(milliseconds).toString();
+    let dateObject = new Date(milliseconds);
+    let dateString = dateObject.toString();
     return dateString.replace(regex, "").trim();
 }
 
 const logs = () => {
 
     type Log = {
-        id: Number,
-        message: String,
-        time : String,
+        id: number,
+        message: string,
+        time : {
+            secs_since_epoch: number,
+            nanos_since_epoch: number,
+        }
     }
 
     const [logs, setLogs] = useState([]);
@@ -32,7 +36,7 @@ const logs = () => {
 
     return (
         <div className="content min-h-full h-screen">
-            <table class="text-white">
+            <table className="text-white">
                 <thead>
                     <th>ID</th>
                     <th>Message</th>
@@ -43,7 +47,7 @@ const logs = () => {
                         logs.map((log:Log, index) => {
                             return (
                                 <tr key="{index}">
-                                    <td>{log.id}</td>
+                                    <td>{log.id.toString()}</td>
                                     <td>{log.message}</td>
                                     <td>{formatDate(log.time.secs_since_epoch)}</td>
                                 </tr>

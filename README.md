@@ -47,24 +47,32 @@ A lightweight subscribe/publish messaging application layer protocol.
 In our case, the sensor publishes data to the broker, and iot_sound_backend subscribes to the broker and processes the data. Data is sent in CSV (comma-separated values) format. Like so: `30.205029,1669026612`, the first value is the loudness level in dB, the second one is a timestamp in Unix time. Data is validated by backend before being saved in the database. Sensor ID is grabbed from the topic the data was published to.
 #### HTTP
 Hypertext Transfer Protocol, also an application layer protocol.
-
-HTTP in this project is used between the frontend and the API server to communicate.
+The frontend application for this project is a web app, which means it runs in a web browser, using HTTP protocol.
+HTTP in this project is also used between the frontend and the API server to communicate.
 This happens using REST (Representational State Transfer) which is an architectural style for providing standards between different computer systems.
-That means the API has different endpoints to hit for the data it wants, and it doesn't need to get all the data at once. That allows us to have a separation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
-Some example of the endpoints are:  
-- http://example.com/sound  
-- http://example.com/sound/sorted  
-- http://example.com/sound/sorted/limit?limit_amount=10  
-- http://example.com/sensors  
-- http://example.com/logs  
+That means the API has different endpoints to hit for the data it wants, and it doesn't need to get all the data at once. When API is called, it returns a JSON string with the results. (JSON is a standard for communication between web applications.) That allows us to have a separation of concern when it comes to querying data from the database and processing it, and rendering it on the frontend.
+Example API call:
+```bash
+$ curl -X GET "http://localhost:8080/sound/limit?limit_amount=1" -H "accept: application/json"
+```
+Example JSON response:
+```json
+[
+ {
+  "sensor_id": "sensor1",
+  "db_level": "50",
+  "timestamp": "2020-05-06T12:00:00Z"
+ },
+]
+```
 
 #### TCP
-[TCP](https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710) or **Transmission Control Protocol** is a network protocol for connection oriented, reliable and error checked transmission of data.   
+[TCP](https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710) or **Transmission Control Protocol** is a transport layer protocol for connection oriented, reliable and error checked transmission of data.   
 It is a **transport layer** protocol that works under the hood.
-This project uses the TCP protocol as it is important for this project because the nature of TCP is that it is lossless, which means that the validity of the data is ensured since they are not just pushed like a stream like UDP. 
+Both MQTT and HTTP application layer protocols, that we use, use TCP for packet transport. TCP is also used for database communication. This is because packet loss is not tolerated in these applications.
 
 #### IP
-[IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer communications protocol.
+[IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer protocol.
 It is the basis of the internet. It uses an addressing system (example: 192.168.1.1) and performs routing between source and the next router which is one hop closer to the intended destination host on another network.
 
 In this project we use the addressing system to connect the different parts of the project, e.g. the sensor and the MQTT broker. It is also the base of all the other protocols used in this project.
@@ -101,6 +109,7 @@ Recent data page:
 
 ### Excellent features
 We went beyond the minimum requirements for the project and provide the following:
+
 - graphical user interface as a web application
 - REST API for frontend – database communication
 - integration of other courses from this semester: IDATA2303 – Data Modeling and Database Applications
@@ -121,14 +130,12 @@ limiting and reason for why we had to resort to data simulation.
 
 ## Conclusion and future work
 
-Overall, the project was a success with us creating a usable product. It is unfortunate that we were not able to test it with actual data from a sensor, owing to our never receiving a microphone from the lecturer.
+Overall, the project was a success with us creating a usable product. It is unfortunate that we did not receive the equipment and thus didn't get to test our system with real world data.  
 
-future work:
-earlier mentioned: "Possible future work includes sending mobile notifications to the user when the environment is getting *too busy* – according to the user's preferences."
-
-Multiple sensors could be used in one room in an attempt to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year. The sensor data could be encrypted in order to protect the privacy of the location.
-
-For the rest of the project, the logs could be filtered in order to not display the same error message hundreds of times.
+Possible future work includes a mobile application with features like: user could subscribe to a given sensor and set maximum loudness preference. They would then receive a mobile notification when the environment is getting too busy according to their liking.  
+Another idea is having multiple sensors in one area and using them to make a map of the sound levels throughout the room. Reports could be generated about the average noise levels during a day, at specific times throughout a week, month, or year.  
+The logs page could be improved. For example, to filter errors in order to not display the same error message hundreds of times, this can currently happen when backend looses connection to the MQTT broker.  
+Sensor data could be encrypted in order to protect the privacy of the location, and thus our system would be suitable for use in private homes.  
 
 ## References
 - Wikipedia contributors. (2022, November 28). *Transmission Control Protocol*. In Wikipedia, The Free Encyclopedia. Retrieved 11:10, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=Transmission_Control_Protocol&oldid=1124312705  
