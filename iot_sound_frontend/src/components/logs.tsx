@@ -36,6 +36,7 @@ const logs = () => {
 
     return (
         <div className="content min-h-full h-screen">
+            <h1 className="text-3xl font-bold text-white">Logs</h1>
             <table className="text-white">
                 <thead>
                     <th>ID</th>

@@ -113,3 +113,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+td {
+    border: 1px solid;
+    border-color: rgb(160, 0, 234);
+    padding-right: 5px;
+    padding-left: 5px;
+}
