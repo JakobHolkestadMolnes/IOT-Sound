@@ -67,12 +67,12 @@ Example JSON response:
 ```
 
 #### TCP
-[TCP](https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710) or **Transmission Control Protocol** is a network protocol for connection oriented, reliable and error checked transmission of data.   
+[TCP](https://no.wikipedia.org/w/index.php?title=TCP&oldid=20556710) or **Transmission Control Protocol** is a transport layer protocol for connection oriented, reliable and error checked transmission of data.   
 It is a **transport layer** protocol that works under the hood.
 Both MQTT and HTTP application layer protocols, that we use, use TCP for packet transport. TCP is also used for database communication. This is because packet loss is not tolerated in these applications.
 
 #### IP
-[IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer communications protocol.
+[IP](https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621) or **Internet Protocol** is the network layer protocol.
 It is the basis of the internet. It uses an addressing system (example: 192.168.1.1) and performs routing between source and the next router which is one hop closer to the intended destination host on another network.
 
 In this project we use the addressing system to connect the different parts of the project, e.g. the sensor and the MQTT broker. It is also the base of all the other protocols used in this project.
