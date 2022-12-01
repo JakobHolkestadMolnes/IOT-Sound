@@ -4,32 +4,31 @@ use rumqttc::{AsyncClient, EventLoop, MqttOptions, QoS};
 use std::{env, error::Error, time::Duration};
 use tokio::sync::mpsc::{channel, Receiver, Sender};
 
-// mqtt topic for this sensor to publish to
-const MQTT_TOPIC: &str = "ntnu/ankeret/biblioteket/loudness/group06/";
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     println!("Sensor node started");
 
     // get env variables
-    let (mqtt_address, mqtt_port, mqtt_client_id) = match get_env_variables() {
-        Ok((address, port, client_id)) => (
-            address,
-            match port.parse() {
-                Ok(port) => port,
-                Err(e) => panic!("Error parsing port: {}", e),
-            },
-            client_id,
-        ),
+    let env_vars = match get_env_variables() {
+        Ok(env_vars) => env_vars,
         Err(e) => panic!("Error getting env variables: {}", e),
     };
 
-    let (client, eventloop) = setup_mqtt_client(&mqtt_address, mqtt_port, &mqtt_client_id);
+    let (client, eventloop) = setup_mqtt_client(
+        &env_vars.mqtt_address,
+        env_vars.mqtt_port,
+        &env_vars.mqtt_client_id,
+    );
 
     let (tx, rx) = channel::<Message>(100);
     let err = tokio::try_join!(
         keep_mqtt_client_alive(eventloop),
-        send_mqtt_messages(client, &mqtt_client_id, rx),
+        send_mqtt_messages(
+            client,
+            &env_vars.mqtt_client_id,
+            &env_vars.mqtt_publish_topic,
+            rx
+        ),
         message_generator(tx),
     );
 
@@ -41,20 +40,35 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+struct EnvVars {
+    mqtt_address: String,
+    mqtt_port: u16,
+    mqtt_client_id: String,
+    mqtt_publish_topic: String,
+}
+
 /// Get env variables
 ///
-/// `MQTT_ADDRESS`, `MQTT_PORT`, `MQTT_CLIENT_ID`
-fn get_env_variables() -> Result<(String, String, String), env::VarError> {
+/// `MQTT_ADDRESS`, `MQTT_PORT`, `MQTT_CLIENT_ID`, `MQTT_PUBLISH_TOPIC`
+fn get_env_variables() -> Result<EnvVars, Box<dyn Error>> {
     if env::var("MQTT_ADDRESS").is_err()
         || env::var("MQTT_PORT").is_err()
         || env::var("MQTT_CLIENT_ID").is_err()
+        || env::var("MQTT_PUBLISH_TOPIC").is_err()
     {
         dotenv::dotenv().ok();
     }
-    let mqtt_adress = env::var("MQTT_ADDRESS")?;
+    let mqtt_address = env::var("MQTT_ADDRESS")?;
     let mqtt_port = env::var("MQTT_PORT")?;
+    let mqtt_port = mqtt_port.parse::<u16>()?;
     let mqtt_client_id = env::var("MQTT_CLIENT_ID")?;
-    Ok((mqtt_adress, mqtt_port, mqtt_client_id))
+    let mqtt_publish_topic = env::var("MQTT_PUBLISH_TOPIC")?;
+    Ok(EnvVars {
+        mqtt_address,
+        mqtt_port,
+        mqtt_client_id,
+        mqtt_publish_topic,
+    })
 }
 #[derive(Debug)]
 struct Message {
@@ -97,13 +111,15 @@ async fn message_generator(channel: Sender<Message>) -> Result<(), Box<dyn Error
 ///
 /// * `client` - The mqtt client
 /// * `client_id` - Mqtt client id for this device
+/// * `publish_topic` - The topic to publish messages to
 /// * `channel` - The channel to listen for messages on
 async fn send_mqtt_messages(
     client: AsyncClient,
     client_id: &str,
+    publish_topic: &str,
     mut channel: Receiver<Message>,
 ) -> Result<(), Box<dyn Error>> {
-    let topic = format!("{MQTT_TOPIC}{client_id}");
+    let topic = format!("{publish_topic}{client_id}");
     while let Some(message) = channel.recv().await {
         if let Err(e) = client
             .publish(&topic, QoS::ExactlyOnce, false, message.payload)
@@ -118,7 +134,9 @@ async fn send_mqtt_messages(
 
 /// Sets up the mqtt client
 ///
-///
+/// * `address` - The address of the mqtt broker
+/// * `port` - The port of the mqtt broker
+/// * `client_id` - The client id of this device
 fn setup_mqtt_client(
     mqtt_address: &str,
     mqtt_port: u16,
