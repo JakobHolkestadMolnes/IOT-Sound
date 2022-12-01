@@ -318,7 +318,7 @@ async fn main() -> std::io::Result<()> {
         || env::var("DB_HOST").is_err()
         || env::var("DB_PORT").is_err()
     {
-        println!("\x1b[33mEnvironment variables not set. Loading .env file\x1b[0m");
+        println!("Environment variables not set. Loading .env file");
         dotenv::dotenv().ok();
     }
 
@@ -336,6 +336,7 @@ async fn main() -> std::io::Result<()> {
         Err(e) => panic!("Error creating database pool: {}", e),
     };
 
+    println!("Starting API");
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))

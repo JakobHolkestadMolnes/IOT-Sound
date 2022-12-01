@@ -48,6 +48,8 @@ async fn main() {
 
     let (tx, rx) = channel::<(String, Bytes)>(100);
 
+    println!("Backend started...");
+    println!("Listening to MQTT topic: {}", MQTT_TOPIC);
     tokio::join!(
         listen_for_messages(eventloop, db_pool.clone(), tx),
         insert_into_database(db_pool.clone(), rx)
@@ -76,7 +78,7 @@ fn get_env_variables() -> Result<EnvVars, Box<dyn Error>> {
         || env::var("DB_PASSWORD").is_err()
         || env::var("DB_NAME").is_err()
     {
-        println!("\x1b[33mEnvironment variables not set. Loading .env file\x1b[0m");
+        println!("Environment variables not set. Loading .env file");
         dotenv::dotenv().ok();
     }
     // if any of the env are not set, return early with error
