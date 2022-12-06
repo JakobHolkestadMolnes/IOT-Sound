@@ -143,7 +143,7 @@ Sensor data could be encrypted in order to protect the privacy of the location, 
 - The Rust open source community. (regularly updated) *The Rust Book* Retrieved multiple times October and November 2022, from https://doc.rust-lang.org/book/  
 
 # How to run?
-In order to run any of the executables you will need to have the environment variable set. If they are not set, the executables will exit on startup. You can also set up a .env file in the environment and the variables will be loaded from there.  
+In order to run any of the executables you will need to have the environment variable set. If they are not set, the executables will exit on startup. You can also set up a `.env` file in the environment and the variables will be loaded from there.  
 Below is a list of the variables you need to set or include in the .env file, along with explanations for each:
 ```
 DB_USER=<database username>
