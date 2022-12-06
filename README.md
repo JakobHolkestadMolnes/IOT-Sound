@@ -141,3 +141,18 @@ Sensor data could be encrypted in order to protect the privacy of the location, 
 - Wikipedia contributors. (2022, November 28). *Transmission Control Protocol*. In Wikipedia, The Free Encyclopedia. Retrieved 11:10, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=Transmission_Control_Protocol&oldid=1124312705  
 - Wikipedia contributors. (2022, November 28). *IPv4*. In _Wikipedia, The Free Encyclopedia_. Retrieved 10:24, November 28, 2022, from https://en.wikipedia.org/w/index.php?title=IPv4&oldid=1124299621  
 - The Rust open source community. (regularly updated) *The Rust Book* Retrieved multiple times October and November 2022, from https://doc.rust-lang.org/book/  
+
+# How to run?
+In order to run any of the executables you will need to have the environment variable set. If they are not set, the executables will exit on startup. You can also set up a .env file in the environment and the variables will be loaded from there.  
+Below is a list of the variables you need to set or include in the .env file, along with explanations for each:
+```
+DB_USER=<database username>
+DB_PASSWORD=<database password>
+DB_HOST=<database address (localhost if running locally)>
+DB_PORT=<databases port>
+DB_NAME=<name of the database>
+MQTT_ADDRESS=<address of MQTT broker>
+MQTT_PORT=<MQTT port>
+MQTT_CLIENT_ID=<ID you want your sensor to have>
+MQTT_PUBLISH_TOPIC=<MQTT topic sensor will publish to (e.g. ntnu/ankeret/c220/loudness/group06/)>
+```
